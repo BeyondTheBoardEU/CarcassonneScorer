@@ -14,3 +14,25 @@ export const CORE_READY = true as const;
 export function coreVersion(): string {
   return "0.0.0";
 }
+
+// ---------------------------------------------------------------------------
+// Board-state model (Item 002)
+// ---------------------------------------------------------------------------
+export type {
+  BoardState,
+  BoardBuilder,
+  Direction,
+  MeepleKind,
+  MeeplePlacement,
+  Position,
+  Rotation,
+  TilePlacement,
+} from "./board/index.js";
+export {
+  BoardStateError,
+  BOARD_STATE_VERSION,
+  createBoard,
+  serializeBoard,
+  deserializeBoard,
+  neighbor,
+} from "./board/index.js";

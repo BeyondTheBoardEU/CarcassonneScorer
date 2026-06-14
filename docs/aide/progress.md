@@ -43,7 +43,7 @@
 ### Deliverables
 - ✅ Project scaffold separating a platform-independent **core** (no UI, no platform APIs) from everything else.
 - 📋 **Tile catalog (base game):** data-driven definition of every base-game tile — edges (city/road/field/monastery segments) and carriable pieces/features — in one authoritative source format.
-- 📋 **Board-state model:** representation of placed tiles, positions/orientations, and meeple placements, independent of how the state was produced.
+- ✅ **Board-state model:** representation of placed tiles, positions/orientations, and meeple placements, independent of how the state was produced.
 - 📋 **Scoring engine (base game, incremental):** scores completed cities, roads, and monasteries, including majority/tie meeple ownership.
 - 📋 Comprehensive unit tests for canonical base-game scenarios (single owner, contested/tied, pennants, monastery completion).
 - 📋 Catalog-validation tests asserting internal consistency (edges match, no malformed tiles).
