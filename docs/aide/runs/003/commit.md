@@ -3,7 +3,7 @@
 - Status: committed
 - Date: 2026-06-15
 - Branch: aide/item-003
-- Commit: 40c08a8
+- Commit: 032cf2b
 - Subject: feat(item-003): tile catalog format and schema
 
 ## Files committed
@@ -22,6 +22,7 @@
 - docs/aide/runs/003/implementation.md (handoff)
 - docs/aide/runs/003/check.md (handoff)
 - docs/aide/runs/003/docs.md (handoff)
+- docs/aide/runs/003/commit.md (this record)
 
 ## Notes
 - All Item 003 work staged and committed on aide/item-003 per AIDE protocol.
