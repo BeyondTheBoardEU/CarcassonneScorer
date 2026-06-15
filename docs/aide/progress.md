@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Progress
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-14
+> **Status:** Draft v1 · **Last updated:** 2026-06-15
 > **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
 
 ---
@@ -42,7 +42,7 @@
 
 ### Deliverables
 - ✅ Project scaffold separating a platform-independent **core** (no UI, no platform APIs) from everything else.
-- 📋 **Tile catalog (base game):** data-driven definition of every base-game tile — edges (city/road/field/monastery segments) and carriable pieces/features — in one authoritative source format.
+- 🚧 **Tile catalog (base game):** data-driven definition of every base-game tile — edges (city/road/field/monastery segments) and carriable pieces/features — in one authoritative source format. *(Item 003 ✅: catalog format, typed loader, rotation helpers, and sample tiles complete. Full base-game data pending Item 004.)*
 - ✅ **Board-state model:** representation of placed tiles, positions/orientations, and meeple placements, independent of how the state was produced.
 - 📋 **Scoring engine (base game, incremental):** scores completed cities, roads, and monasteries, including majority/tie meeple ownership.
 - 📋 Comprehensive unit tests for canonical base-game scenarios (single owner, contested/tied, pennants, monastery completion).

@@ -36,3 +36,26 @@ export {
   deserializeBoard,
   neighbor,
 } from "./board/index.js";
+
+// ---------------------------------------------------------------------------
+// Tile catalog (Item 003)
+// ---------------------------------------------------------------------------
+export type {
+  Catalog,
+  CitySegment,
+  FieldSegment,
+  HalfEdge,
+  MonasterySegment,
+  RoadSegment,
+  Segment,
+  SegmentType,
+  Side,
+  TileDefinition,
+} from "./catalog/index.js";
+export {
+  CatalogError,
+  loadCatalog,
+  rotateHalfEdge,
+  rotateSide,
+  sampleTiles,
+} from "./catalog/index.js";
