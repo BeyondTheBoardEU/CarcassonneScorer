@@ -31,3 +31,7 @@ export { rotateHalfEdge, rotateSide } from "./rotate.js";
 // Sample data (Item 003) and base-game catalog (Item 004)
 export { sampleTiles } from "./data/index.js";
 export { baseGameTiles, baseGameCatalog } from "./data/index.js";
+
+// Consistency checker (Item 005)
+export type { CatalogIssue, ConsistencyIssueCode } from "./consistency.js";
+export { checkCatalogConsistency, assertCatalogConsistent } from "./consistency.js";

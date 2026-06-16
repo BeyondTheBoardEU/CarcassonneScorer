@@ -60,4 +60,7 @@ export {
   sampleTiles,
   baseGameTiles,
   baseGameCatalog,
+  checkCatalogConsistency,
+  assertCatalogConsistent,
 } from "./catalog/index.js";
+export type { CatalogIssue, ConsistencyIssueCode } from "./catalog/index.js";

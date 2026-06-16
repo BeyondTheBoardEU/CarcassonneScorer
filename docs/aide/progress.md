@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Progress
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-16
+> **Status:** Draft v1 · **Last updated:** 2026-06-16 (Item 005 complete)
 > **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
 
 ---
@@ -46,13 +46,13 @@
 - ✅ **Board-state model:** representation of placed tiles, positions/orientations, and meeple placements, independent of how the state was produced.
 - 📋 **Scoring engine (base game, incremental):** scores completed cities, roads, and monasteries, including majority/tie meeple ownership.
 - 📋 Comprehensive unit tests for canonical base-game scenarios (single owner, contested/tied, pennants, monastery completion).
-- 📋 Catalog-validation tests asserting internal consistency (edges match, no malformed tiles).
+- ✅ Catalog-validation tests asserting internal consistency (edges match, no malformed tiles). *(Item 005 ✅: `checkCatalogConsistency` implemented and exported; all six invariant classes detected; base-game catalog passes with zero issues.)*
 
 ### Acceptance criteria
 - [x] Core module has zero UI/platform dependencies and runs in isolation.
 - [ ] Engine returns correct scores for completed cities, roads, and monasteries from a hand-authored board state (automated tests).
 - [ ] Contested features award points by official majority/tie rules (tests).
-- [ ] Base-game catalog passes internal-consistency checks.
+- [x] Base-game catalog passes internal-consistency checks.
 
 **Vision trace:** G6; principles 1/2/6; features 4.1 (foundation), 4.5, 5.3.
 
