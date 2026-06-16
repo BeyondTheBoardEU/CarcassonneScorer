@@ -58,4 +58,6 @@ export {
   rotateHalfEdge,
   rotateSide,
   sampleTiles,
+  baseGameTiles,
+  baseGameCatalog,
 } from "./catalog/index.js";

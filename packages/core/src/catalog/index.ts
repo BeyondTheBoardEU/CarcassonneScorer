@@ -28,5 +28,6 @@ export { loadCatalog } from "./loader.js";
 // Rotation helpers
 export { rotateHalfEdge, rotateSide } from "./rotate.js";
 
-// Sample data
+// Sample data (Item 003) and base-game catalog (Item 004)
 export { sampleTiles } from "./data/index.js";
+export { baseGameTiles, baseGameCatalog } from "./data/index.js";
