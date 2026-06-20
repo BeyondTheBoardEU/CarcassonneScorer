@@ -70,3 +70,9 @@ export type { CatalogIssue, ConsistencyIssueCode } from "./catalog/index.js";
 // ---------------------------------------------------------------------------
 export type { Feature, FeatureMeeple, FeatureSegmentRef, FeatureType } from "./features/index.js";
 export { extractFeatures } from "./features/index.js";
+
+// ---------------------------------------------------------------------------
+// Meeple ownership / majority-tie resolution (Item 007)
+// ---------------------------------------------------------------------------
+export type { OwnershipResult } from "./scoring/index.js";
+export { resolveOwnership, resolveFeatureOwnership } from "./scoring/index.js";
