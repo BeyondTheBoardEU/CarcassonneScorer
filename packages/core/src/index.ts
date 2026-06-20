@@ -82,3 +82,9 @@ export { resolveOwnership, resolveFeatureOwnership } from "./scoring/index.js";
 // ---------------------------------------------------------------------------
 export type { FeatureScore } from "./scoring/index.js";
 export { scoreCity, scoreRoad, scoreCompletedCityRoadFeatures } from "./scoring/index.js";
+
+// ---------------------------------------------------------------------------
+// Monastery scoring and engine assembly (Item 009)
+// ---------------------------------------------------------------------------
+export type { BoardScore } from "./scoring/index.js";
+export { scoreMonastery, scoreCompletedFeatures, scoreBoard } from "./scoring/index.js";

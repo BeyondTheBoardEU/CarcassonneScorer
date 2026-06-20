@@ -10,3 +10,8 @@ export { resolveOwnership, resolveFeatureOwnership } from "./ownership.js";
 
 export type { FeatureScore } from "./feature-score.js";
 export { scoreCity, scoreRoad, scoreCompletedCityRoadFeatures } from "./feature-score.js";
+
+export { scoreMonastery } from "./monastery.js";
+
+export type { BoardScore } from "./engine.js";
+export { scoreCompletedFeatures, scoreBoard } from "./engine.js";
