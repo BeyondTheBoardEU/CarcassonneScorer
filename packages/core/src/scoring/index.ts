@@ -7,3 +7,6 @@
 
 export type { OwnershipResult } from "./ownership.js";
 export { resolveOwnership, resolveFeatureOwnership } from "./ownership.js";
+
+export type { FeatureScore } from "./feature-score.js";
+export { scoreCity, scoreRoad, scoreCompletedCityRoadFeatures } from "./feature-score.js";

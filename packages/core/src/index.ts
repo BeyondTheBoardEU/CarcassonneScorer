@@ -76,3 +76,9 @@ export { extractFeatures } from "./features/index.js";
 // ---------------------------------------------------------------------------
 export type { OwnershipResult } from "./scoring/index.js";
 export { resolveOwnership, resolveFeatureOwnership } from "./scoring/index.js";
+
+// ---------------------------------------------------------------------------
+// City and road incremental scoring (Item 008)
+// ---------------------------------------------------------------------------
+export type { FeatureScore } from "./scoring/index.js";
+export { scoreCity, scoreRoad, scoreCompletedCityRoadFeatures } from "./scoring/index.js";
