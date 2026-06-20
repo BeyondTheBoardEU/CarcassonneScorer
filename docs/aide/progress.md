@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Progress
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-20 (Item 009 complete)
+> **Status:** Draft v1 · **Last updated:** 2026-06-20 (Item 010 complete — Stage 1 complete)
 > **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
 
 ---
@@ -23,7 +23,7 @@
 
 | Stage | Title | Maturity phase | Status |
 |-------|-------|----------------|--------|
-| 1 | Foundation: tile catalog + scoring engine core | Scorepad | 🚧 In Progress |
+| 1 | Foundation: tile catalog + scoring engine core | Scorepad | ✅ Complete |
 | 2 | Manual scorepad MVP (base game) | Scorepad | 📋 Planned |
 | 3 | Offline durability + review & correction | Scorepad | 📋 Planned |
 | 4 | End-game tally assistant incl. farmers | Scorepad | 📋 Planned |
@@ -37,7 +37,7 @@
 
 ## Stage 1 — Foundation: tile catalog + scoring engine core
 
-**Status:** 🚧 In Progress · **Maturity phase:** Scorepad · **Dependencies:** none
+**Status:** ✅ Complete · **Maturity phase:** Scorepad · **Dependencies:** none
 **Goal:** Platform-independent core that scores base-game features from board state, unit-tested.
 
 ### Deliverables
@@ -45,7 +45,7 @@
 - ✅ **Tile catalog (base game):** data-driven definition of every base-game tile — edges (city/road/field/monastery segments) and carriable pieces/features — in one authoritative source format. *(Item 003 ✅: catalog format, typed loader, rotation helpers, and sample tiles complete. Item 004 ✅: all 24 base-game tile types authored and exported as `baseGameTiles`/`baseGameCatalog`.)*
 - ✅ **Board-state model:** representation of placed tiles, positions/orientations, and meeple placements, independent of how the state was produced.
 - ✅ **Scoring engine (base game, incremental):** scores completed cities, roads, and monasteries, including majority/tie meeple ownership. *(Items 006–009 together deliver this. Item 006 ✅: feature extraction — `extractFeatures` groups placed-tile segments into cities/roads/monasteries/fields, with correct completion, meeple attachment, pennant totals, and deterministic ordering — is the foundation for this engine. Item 007 ✅: `resolveOwnership`/`resolveFeatureOwnership` in a new `scoring/` core module implement the majority/tie meeple-ownership rule (empty/single/majority/two-way/three-way tie, kind-agnostic, deterministic, order-independent), exported from `@carcassonne/core`. Item 008 ✅: `scoreCity`/`scoreRoad`/`FeatureScore`/`scoreCompletedCityRoadFeatures` added to `scoring/`, exported from `@carcassonne/core` — completed city = `2*tileCount + 2*pennants`, completed road = `1*tileCount`, credited via Item 007's `resolveOwnership` (ties credit every tied player the full points). Item 009 ✅: `scoreMonastery` (flat 9 points for a completed monastery) plus the unified `scoreCompletedFeatures` aggregator and the `scoreBoard(board, catalog)` engine entry point — returning `BoardScore { features, playerTotals }` — complete the engine; exported from `@carcassonne/core`.)*
-- 📋 Comprehensive unit tests for canonical base-game scenarios (single owner, contested/tied, pennants, monastery completion).
+- ✅ Comprehensive unit tests for canonical base-game scenarios (single owner, contested/tied, pennants, monastery completion). *(Item 010 ✅: `packages/core/test/scenarios.test.ts` adds 16 named tests across all 14 required canonical scenarios — single-owner city/road/monastery, single- and multi-pennant cities, contested clear-majority, two-way and three-way ties, a many-tile feature, two separate same-type features, a fully completed mixed board (with a shuffled-order determinism check), unowned completed features, incomplete-feature exclusion, and the empty board — driving the public `scoreBoard(board, catalog)` end to end with exact `points`/`players`/`playerTotals` assertions. No engine bug found; test-only change.)*
 - ✅ Catalog-validation tests asserting internal consistency (edges match, no malformed tiles). *(Item 005 ✅: `checkCatalogConsistency` implemented and exported; all six invariant classes detected; base-game catalog passes with zero issues.)*
 
 ### Acceptance criteria
