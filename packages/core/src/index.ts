@@ -64,3 +64,9 @@ export {
   assertCatalogConsistent,
 } from "./catalog/index.js";
 export type { CatalogIssue, ConsistencyIssueCode } from "./catalog/index.js";
+
+// ---------------------------------------------------------------------------
+// Feature extraction (Item 006)
+// ---------------------------------------------------------------------------
+export type { Feature, FeatureMeeple, FeatureSegmentRef, FeatureType } from "./features/index.js";
+export { extractFeatures } from "./features/index.js";

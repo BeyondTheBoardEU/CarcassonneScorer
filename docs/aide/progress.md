@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Progress
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-16 (Item 005 complete)
+> **Status:** Draft v1 · **Last updated:** 2026-06-20 (Item 006 complete)
 > **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
 
 ---
@@ -44,7 +44,7 @@
 - ✅ Project scaffold separating a platform-independent **core** (no UI, no platform APIs) from everything else.
 - ✅ **Tile catalog (base game):** data-driven definition of every base-game tile — edges (city/road/field/monastery segments) and carriable pieces/features — in one authoritative source format. *(Item 003 ✅: catalog format, typed loader, rotation helpers, and sample tiles complete. Item 004 ✅: all 24 base-game tile types authored and exported as `baseGameTiles`/`baseGameCatalog`.)*
 - ✅ **Board-state model:** representation of placed tiles, positions/orientations, and meeple placements, independent of how the state was produced.
-- 📋 **Scoring engine (base game, incremental):** scores completed cities, roads, and monasteries, including majority/tie meeple ownership.
+- 📋 **Scoring engine (base game, incremental):** scores completed cities, roads, and monasteries, including majority/tie meeple ownership. *(Item 006 ✅: feature extraction — `extractFeatures` groups placed-tile segments into cities/roads/monasteries/fields, with correct completion, meeple attachment, pennant totals, and deterministic ordering — is the foundation for this engine. The deliverable itself remains 📋 until ownership/majority resolution and city/road/monastery point scoring (Items 007–010) land.)*
 - 📋 Comprehensive unit tests for canonical base-game scenarios (single owner, contested/tied, pennants, monastery completion).
 - ✅ Catalog-validation tests asserting internal consistency (edges match, no malformed tiles). *(Item 005 ✅: `checkCatalogConsistency` implemented and exported; all six invariant classes detected; base-game catalog passes with zero issues.)*
 
