@@ -88,3 +88,17 @@ export { scoreCity, scoreRoad, scoreCompletedCityRoadFeatures } from "./scoring/
 // ---------------------------------------------------------------------------
 export type { BoardScore } from "./scoring/index.js";
 export { scoreMonastery, scoreCompletedFeatures, scoreBoard } from "./scoring/index.js";
+
+// ---------------------------------------------------------------------------
+// Scorepad session model and tally reducer (Item 012)
+// ---------------------------------------------------------------------------
+export type { GameSession, Player, ScoreEvent } from "./session/index.js";
+export {
+  SessionError,
+  SESSION_VERSION,
+  MIN_PLAYERS,
+  MAX_PLAYERS,
+  createSession,
+  addScoreEvent,
+  computeTotals,
+} from "./session/index.js";

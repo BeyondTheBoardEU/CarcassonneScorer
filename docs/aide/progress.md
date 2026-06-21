@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Progress
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-21 (Item 011 complete — Stage 2 web scaffold established; Stage 2 now In Progress)
+> **Status:** Draft v1 · **Last updated:** 2026-06-21 (Item 012 complete — manual-scorepad session model + tally reducer landed in core; Stage 2 still In Progress)
 > **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
 
 ---
@@ -70,6 +70,7 @@
 - 📋 **Running scoreboard:** always-visible current totals per player, readable at a glance.
 - 📋 **Local persistence (first cut):** game state and event log saved to local storage; reload restores the in-progress game.
 - 🚧 Thin UI over the Stage 1 core; no scoring logic duplicated in the UI. *(Item 011 🚧: web scaffold established — new `@carcassonne/web` workspace package (React 18 + Vite 5 + TypeScript) in `packages/web`, rendering a value imported from `@carcassonne/core` to prove the UI→core wiring; Vitest workspace projects keep core tests on `node` and add jsdom component tests for web; root `lint`/`build`/`test` gate extended to cover both packages; core boundary (no DOM in `packages/core`) preserved. Deliverable completes as Items 012–020 land.)*
+- 🚧 **Score model / totals from the core:** *(Item 012 🚧: platform-independent manual-scorepad domain added in `packages/core/src/session/` — `Player`, `ScoreEvent`, `GameSession`, `SESSION_VERSION` (plus `MIN_PLAYERS`/`MAX_PLAYERS` = 2/6, defined once), `SessionError`, immutable `createSession`/`addScoreEvent` constructors, and a pure `computeTotals` tally reducer; all exported from `@carcassonne/core`. No board/catalog/scoreBoard coupling; JSON-serializable shapes (round-trip tested); 18 new tests in `packages/core/test/session.test.ts`. This is the "totals come from the core" engine the setup/scoreboard/log/persistence UI items (013–019) will bind to; it does not by itself satisfy a user-facing Stage 2 acceptance criterion.)*
 
 ### Acceptance criteria
 - [ ] Set up a 2–6 player game, name players, assign distinct meeple colours.
