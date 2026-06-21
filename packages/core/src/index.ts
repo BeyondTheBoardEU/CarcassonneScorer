@@ -102,3 +102,15 @@ export {
   addScoreEvent,
   computeTotals,
 } from "./session/index.js";
+
+// ---------------------------------------------------------------------------
+// Standard meeple colour set (Item 013)
+// ---------------------------------------------------------------------------
+export type { MeepleColour } from "./colours/index.js";
+export {
+  MeepleColourError,
+  meepleColours,
+  getMeepleColour,
+  hasMeepleColour,
+  meepleColourIds,
+} from "./colours/index.js";

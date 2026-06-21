@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Progress
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-21 (Item 012 complete — manual-scorepad session model + tally reducer landed in core; Stage 2 still In Progress)
+> **Status:** Draft v1 · **Last updated:** 2026-06-21 (Item 013 complete — standard meeple colour set (accessible) landed in core; Stage 2 still In Progress)
 > **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
 
 ---
@@ -64,7 +64,7 @@
 **Goal:** Usable web app to set up a base-game session and track scores by hand with live totals, persisted locally.
 
 ### Deliverables
-- 📋 **Game setup:** 2–6 players, name + meeple colour from the standard set; colour selection does not rely on colour alone (label/pattern).
+- 🚧 **Game setup:** 2–6 players, name + meeple colour from the standard set; colour selection does not rely on colour alone (label/pattern). *(Item 013 ✅: the standard meeple colour set landed in `packages/core/src/colours/` — `MeepleColour` type, `meepleColours` (6 entries: red, blue, green, yellow, black, and the documented sixth, gray), `getMeepleColour`/`hasMeepleColour`/`meepleColourIds` accessors, all exported from `@carcassonne/core`. Each colour carries a unique `id` and a distinct non-colour `pattern` token (solid/stripes/dots/checks/crosshatch/diagonal), satisfying the accessibility NFR at the data layer. No DOM, no cyclic imports. This is the colour-set *data*; the setup UI that assigns/enforces distinct colours per player is Item 015.)*
 - 📋 **Manual score entry:** add or adjust points for any player at any time.
 - 📋 **Score event log:** every change recorded as a traceable event (who, how many, when/why).
 - 📋 **Running scoreboard:** always-visible current totals per player, readable at a glance.
