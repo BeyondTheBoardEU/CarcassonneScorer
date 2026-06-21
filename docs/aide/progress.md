@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Progress
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-21 (Item 014 complete — app state store and game-shell lifecycle landed in web; Stage 2 still In Progress)
+> **Status:** Draft v1 · **Last updated:** 2026-06-21 (Item 015 complete — game setup UI landed in web, satisfying Stage 2's first user-facing acceptance criterion; Stage 2 still In Progress)
 > **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
 
 ---
@@ -64,7 +64,7 @@
 **Goal:** Usable web app to set up a base-game session and track scores by hand with live totals, persisted locally.
 
 ### Deliverables
-- 🚧 **Game setup:** 2–6 players, name + meeple colour from the standard set; colour selection does not rely on colour alone (label/pattern). *(Item 013 ✅: the standard meeple colour set landed in `packages/core/src/colours/` — `MeepleColour` type, `meepleColours` (6 entries: red, blue, green, yellow, black, and the documented sixth, gray), `getMeepleColour`/`hasMeepleColour`/`meepleColourIds` accessors, all exported from `@carcassonne/core`. Each colour carries a unique `id` and a distinct non-colour `pattern` token (solid/stripes/dots/checks/crosshatch/diagonal), satisfying the accessibility NFR at the data layer. No DOM, no cyclic imports. This is the colour-set *data*; the setup UI that assigns/enforces distinct colours per player is Item 015.)*
+- ✅ **Game setup:** 2–6 players, name + meeple colour from the standard set; colour selection does not rely on colour alone (label/pattern). *(Item 013 ✅: the standard meeple colour set landed in `packages/core/src/colours/` — `MeepleColour` type, `meepleColours` (6 entries: red, blue, green, yellow, black, and the documented sixth, gray), `getMeepleColour`/`hasMeepleColour`/`meepleColourIds` accessors, all exported from `@carcassonne/core`. Each colour carries a unique `id` and a distinct non-colour `pattern` token (solid/stripes/dots/checks/crosshatch/diagonal), satisfying the accessibility NFR at the data layer. No DOM, no cyclic imports. This is the colour-set *data*; the setup UI that assigns/enforces distinct colours per player is Item 015. Item 015 ✅: the real setup screen landed in `packages/web/src/setup/` (`SetupView`/`PlayerRow`/`ColourPicker`), replacing the Item 014 placeholder — 2–6 player rows (add/remove disabled at the bounds, reusing the core's exported `MIN_PLAYERS`/`MAX_PLAYERS`), a name input + colour `<select>` per row sourced from `meepleColours`, already-taken colours rendered as disabled `<option>`s so the chosen set stays distinct, each option's visible text carries the non-colour cue ("{name} ({pattern})"), empty names default to "Player N", and "Start game" calls `useGame().startGame` → core `createSession`, routing the shell to the in-game view; a `SessionError` backstop is caught and shown inline instead of crashing. This satisfies the Stage 2 acceptance criterion "Set up a 2–6 player game, name players, assign distinct meeple colours.")*
 - 📋 **Manual score entry:** add or adjust points for any player at any time.
 - 📋 **Score event log:** every change recorded as a traceable event (who, how many, when/why).
 - 📋 **Running scoreboard:** always-visible current totals per player, readable at a glance.
@@ -73,7 +73,7 @@
 - 🚧 **Score model / totals from the core:** *(Item 012 🚧: platform-independent manual-scorepad domain added in `packages/core/src/session/` — `Player`, `ScoreEvent`, `GameSession`, `SESSION_VERSION` (plus `MIN_PLAYERS`/`MAX_PLAYERS` = 2/6, defined once), `SessionError`, immutable `createSession`/`addScoreEvent` constructors, and a pure `computeTotals` tally reducer; all exported from `@carcassonne/core`. No board/catalog/scoreBoard coupling; JSON-serializable shapes (round-trip tested); 18 new tests in `packages/core/test/session.test.ts`. This is the "totals come from the core" engine the setup/scoreboard/log/persistence UI items (013–019) will bind to; it does not by itself satisfy a user-facing Stage 2 acceptance criterion. Item 014 ✅: the web store now wires up to this engine — `totals` is produced exclusively by `computeTotals(session)` (`useMemo`'d, never summed in the store/components), and `startGame`/`addScore` delegate to `createSession`/`addScoreEvent` with the store supplying `id`/`timestamp` at dispatch as the sole impure boundary. Still does not by itself tick a user-facing Stage 2 acceptance criterion — the setup/scoreboard/entry/log UI (Items 015–018) is what makes this visible to a user.)*
 
 ### Acceptance criteria
-- [ ] Set up a 2–6 player game, name players, assign distinct meeple colours.
+- [x] Set up a 2–6 player game, name players, assign distinct meeple colours.
 - [ ] Add/adjust points for any player; totals update immediately.
 - [ ] Every score change appears in the event log.
 - [ ] Reloading restores the exact in-progress game (players, totals, log).

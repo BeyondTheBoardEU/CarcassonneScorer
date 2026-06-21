@@ -20,7 +20,7 @@ describe("App", () => {
     expect(status.textContent).toMatch(/v\d+\.\d+\.\d+/);
   });
 
-  it("shows the setup placeholder when no game is in progress", () => {
+  it("shows the setup view when no game is in progress", () => {
     render(<App />);
     expect(screen.getByTestId("setup-view")).toBeDefined();
   });
@@ -28,7 +28,11 @@ describe("App", () => {
   it("routes setup -> play when a game is started", () => {
     render(<App />);
 
-    fireEvent.click(screen.getByTestId("start-demo-game"));
+    // Item 015's real setup form: the default 2 rows have distinct
+    // pre-assigned colours and fall back to "Player N" names, so submitting
+    // immediately is enough to drive the setup -> play transition here;
+    // the setup view's own test suite covers the form's details.
+    fireEvent.click(screen.getByTestId("start-game"));
 
     expect(screen.getByTestId("play-view")).toBeDefined();
     expect(screen.queryByTestId("setup-view")).toBeNull();
@@ -37,22 +41,12 @@ describe("App", () => {
   it("routes play -> setup when newGame is invoked", () => {
     render(<App />);
 
-    fireEvent.click(screen.getByTestId("start-demo-game"));
+    fireEvent.click(screen.getByTestId("start-game"));
     expect(screen.getByTestId("play-view")).toBeDefined();
 
     fireEvent.click(screen.getByTestId("new-game"));
     expect(screen.getByTestId("setup-view")).toBeDefined();
     expect(screen.queryByTestId("play-view")).toBeNull();
-  });
-
-  it("surfaces a SessionError from an invalid startGame without crashing", () => {
-    render(<App />);
-
-    fireEvent.click(screen.getByTestId("start-invalid-game"));
-
-    expect(screen.getByTestId("setup-error").textContent).toMatch(/player/i);
-    // Still on the setup view — the app did not crash or route to play.
-    expect(screen.getByTestId("setup-view")).toBeDefined();
   });
 
   it("seeds straight into the play view via the initialSession hydrate seam", () => {

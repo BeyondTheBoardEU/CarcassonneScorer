@@ -1,57 +1,7 @@
-import { useState } from "react";
-import { CORE_READY, coreVersion, SessionError } from "@carcassonne/core";
-import type { GameSession, Player } from "@carcassonne/core";
+import { CORE_READY, coreVersion } from "@carcassonne/core";
+import type { GameSession } from "@carcassonne/core";
 import { GameProvider, useGame } from "./state/index.js";
-
-/**
- * Minimal placeholder setup view (Item 014 shell only).
- *
- * Replaced by Item 015's real setup form (player names/colours, validation
- * UI). This placeholder proves the store wiring: it starts a fixed-roster
- * game so the shell can route to the play view, and surfaces a
- * `SessionError` from an invalid `startGame` call (instead of crashing) via
- * local error state.
- */
-function SetupView(): JSX.Element {
-  const { startGame } = useGame();
-  const [error, setError] = useState<string | null>(null);
-
-  function handleStart(players: readonly Player[]): void {
-    try {
-      startGame(players);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof SessionError ? err.message : "Could not start game.");
-    }
-  }
-
-  return (
-    <section data-testid="setup-view">
-      <h2>Set up a new game</h2>
-      <p>Placeholder — replaced by Item 015 (real setup form).</p>
-      {error && <p data-testid="setup-error">{error}</p>}
-      <button
-        type="button"
-        data-testid="start-demo-game"
-        onClick={() =>
-          handleStart([
-            { id: "p1", name: "Player 1", colourId: "red" },
-            { id: "p2", name: "Player 2", colourId: "blue" },
-          ])
-        }
-      >
-        Start demo game
-      </button>
-      <button
-        type="button"
-        data-testid="start-invalid-game"
-        onClick={() => handleStart([{ id: "p1", name: "Player 1", colourId: "red" }])}
-      >
-        Start invalid game (1 player)
-      </button>
-    </section>
-  );
-}
+import { SetupView } from "./setup/index.js";
 
 /**
  * Minimal placeholder play view (Item 014 shell only).
@@ -98,9 +48,9 @@ function PlayView(): JSX.Element {
 }
 
 /**
- * Shell that routes between the setup and play placeholders purely based
- * on store state (`session === null` vs. a `GameSession`). No router
- * dependency is needed for two views (Item 014).
+ * Shell that routes between the real setup view (Item 015) and the play
+ * placeholder purely based on store state (`session === null` vs. a
+ * `GameSession`). No router dependency is needed for two views (Item 014).
  */
 function GameShell(): JSX.Element {
   const { session } = useGame();
@@ -116,9 +66,10 @@ export interface AppProps {
  * App — the root component of the Carcassonne Scorer web shell.
  *
  * Item 011 proved the UI -> core wiring via `CORE_READY`/`coreVersion()`.
- * Item 014 adds the app's state container (`GameProvider`/`useGame`) and
- * routes between a setup placeholder (no game) and a play placeholder (game
- * in progress) — both replaced by the real Stage 2 UI (Items 015-018).
+ * Item 014 added the app's state container (`GameProvider`/`useGame`) and
+ * routing between setup and play. Item 015 replaces the setup placeholder
+ * with the real game setup form (`SetupView`); the play view remains a
+ * placeholder until Items 016-018.
  */
 export function App(props: AppProps = {}): JSX.Element {
   return (
