@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Progress
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-20 (Item 010 complete — Stage 1 complete)
+> **Status:** Draft v1 · **Last updated:** 2026-06-21 (Item 011 complete — Stage 2 web scaffold established; Stage 2 now In Progress)
 > **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
 
 ---
@@ -24,7 +24,7 @@
 | Stage | Title | Maturity phase | Status |
 |-------|-------|----------------|--------|
 | 1 | Foundation: tile catalog + scoring engine core | Scorepad | ✅ Complete |
-| 2 | Manual scorepad MVP (base game) | Scorepad | 📋 Planned |
+| 2 | Manual scorepad MVP (base game) | Scorepad | 🚧 In Progress |
 | 3 | Offline durability + review & correction | Scorepad | 📋 Planned |
 | 4 | End-game tally assistant incl. farmers | Scorepad | 📋 Planned |
 | 5 | Expansion coverage (major expansions) | Scorepad | 📋 Planned |
@@ -60,7 +60,7 @@
 
 ## Stage 2 — Manual scorepad MVP (base game)
 
-**Status:** 📋 Planned · **Maturity phase:** Scorepad · **Dependencies:** Stage 1
+**Status:** 🚧 In Progress · **Maturity phase:** Scorepad · **Dependencies:** Stage 1
 **Goal:** Usable web app to set up a base-game session and track scores by hand with live totals, persisted locally.
 
 ### Deliverables
@@ -69,7 +69,7 @@
 - 📋 **Score event log:** every change recorded as a traceable event (who, how many, when/why).
 - 📋 **Running scoreboard:** always-visible current totals per player, readable at a glance.
 - 📋 **Local persistence (first cut):** game state and event log saved to local storage; reload restores the in-progress game.
-- 📋 Thin UI over the Stage 1 core; no scoring logic duplicated in the UI.
+- 🚧 Thin UI over the Stage 1 core; no scoring logic duplicated in the UI. *(Item 011 🚧: web scaffold established — new `@carcassonne/web` workspace package (React 18 + Vite 5 + TypeScript) in `packages/web`, rendering a value imported from `@carcassonne/core` to prove the UI→core wiring; Vitest workspace projects keep core tests on `node` and add jsdom component tests for web; root `lint`/`build`/`test` gate extended to cover both packages; core boundary (no DOM in `packages/core`) preserved. Deliverable completes as Items 012–020 land.)*
 
 ### Acceptance criteria
 - [ ] Set up a 2–6 player game, name players, assign distinct meeple colours.
