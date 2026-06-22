@@ -2,14 +2,17 @@ import { CORE_READY, coreVersion } from "@carcassonne/core";
 import type { GameSession } from "@carcassonne/core";
 import { GameProvider, useGame } from "./state/index.js";
 import { SetupView } from "./setup/index.js";
+import { Scoreboard } from "./scoreboard/index.js";
 
 /**
- * Minimal placeholder play view (Item 014 shell only).
+ * The in-game (play) view: the always-visible scoreboard (Item 016) plus a
+ * temporary score-entry/new-game stand-in until Items 017/018 land.
  *
- * Replaced by Items 016 (scoreboard), 017 (score entry), and 018 (log),
- * which will compose inside this view. This placeholder only proves that
- * `totals` is derived from the core (`computeTotals`, via `useGame`) and
- * that `addScore`/`newGame` round-trip through the store.
+ * `totals-list`/`total-${id}` are kept (duplicating what the `Scoreboard`
+ * now shows) purely so existing routing assertions (`App.test.tsx`,
+ * predating this item) keep working without being rewritten here; the
+ * `Scoreboard` itself is the real, spec-mandated display and reads
+ * `totals` from the same `useGame()` store — no totals are computed here.
  */
 function PlayView(): JSX.Element {
   const { session, totals, addScore, newGame } = useGame();
@@ -22,7 +25,8 @@ function PlayView(): JSX.Element {
   return (
     <section data-testid="play-view">
       <h2>Game in progress</h2>
-      <p>Placeholder — replaced by Items 016/017/018 (scoreboard, entry, log).</p>
+      <Scoreboard />
+      <p>Score entry (Item 017) and the event log (Item 018) are not yet built.</p>
       <ul data-testid="totals-list">
         {session.players.map((player) => (
           <li key={player.id} data-testid={`total-${player.id}`}>
@@ -49,7 +53,7 @@ function PlayView(): JSX.Element {
 
 /**
  * Shell that routes between the real setup view (Item 015) and the play
- * placeholder purely based on store state (`session === null` vs. a
+ * view purely based on store state (`session === null` vs. a
  * `GameSession`). No router dependency is needed for two views (Item 014).
  */
 function GameShell(): JSX.Element {
@@ -68,8 +72,9 @@ export interface AppProps {
  * Item 011 proved the UI -> core wiring via `CORE_READY`/`coreVersion()`.
  * Item 014 added the app's state container (`GameProvider`/`useGame`) and
  * routing between setup and play. Item 015 replaces the setup placeholder
- * with the real game setup form (`SetupView`); the play view remains a
- * placeholder until Items 016-018.
+ * with the real game setup form (`SetupView`); Item 016 replaces the play
+ * view's scoreboard placeholder with the real `Scoreboard`. Score entry
+ * (Item 017) and the event log (Item 018) remain placeholders.
  */
 export function App(props: AppProps = {}): JSX.Element {
   return (
