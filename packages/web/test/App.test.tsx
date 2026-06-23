@@ -60,6 +60,6 @@ describe("App", () => {
 
     expect(screen.getByTestId("play-view")).toBeDefined();
     expect(screen.queryByTestId("setup-view")).toBeNull();
-    expect(screen.getByTestId("total-p1").textContent).toContain("0");
+    expect(screen.getByTestId("scoreboard-total-p1").textContent).toBe("0");
   });
 });

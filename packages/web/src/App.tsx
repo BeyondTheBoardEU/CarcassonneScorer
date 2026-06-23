@@ -3,19 +3,20 @@ import type { GameSession } from "@carcassonne/core";
 import { GameProvider, useGame } from "./state/index.js";
 import { SetupView } from "./setup/index.js";
 import { Scoreboard } from "./scoreboard/index.js";
+import { ScoreEntry } from "./score-entry/index.js";
 
 /**
- * The in-game (play) view: the always-visible scoreboard (Item 016) plus a
- * temporary score-entry/new-game stand-in until Items 017/018 land.
+ * The in-game (play) view: the always-visible scoreboard (Item 016) plus
+ * manual score entry (Item 017). The event log (Item 018) is not yet built.
  *
- * `totals-list`/`total-${id}` are kept (duplicating what the `Scoreboard`
- * now shows) purely so existing routing assertions (`App.test.tsx`,
- * predating this item) keep working without being rewritten here; the
- * `Scoreboard` itself is the real, spec-mandated display and reads
- * `totals` from the same `useGame()` store — no totals are computed here.
+ * The Item 014 scratch placeholder (`totals-list` + `add-score-*` buttons)
+ * is retired here: the `Scoreboard` is the single, real totals display, and
+ * `ScoreEntry` is the single, real way to add/adjust points — both read
+ * from / dispatch through the same `useGame()` store, so no totals are
+ * computed in this component.
  */
 function PlayView(): JSX.Element {
-  const { session, totals, addScore, newGame } = useGame();
+  const { session, newGame } = useGame();
 
   if (!session) {
     // Unreachable when rendered by App's routing below; narrows the type.
@@ -26,24 +27,7 @@ function PlayView(): JSX.Element {
     <section data-testid="play-view">
       <h2>Game in progress</h2>
       <Scoreboard />
-      <p>Score entry (Item 017) and the event log (Item 018) are not yet built.</p>
-      <ul data-testid="totals-list">
-        {session.players.map((player) => (
-          <li key={player.id} data-testid={`total-${player.id}`}>
-            {player.name}: {totals[player.id] ?? 0}
-          </li>
-        ))}
-      </ul>
-      {session.players.map((player) => (
-        <button
-          key={player.id}
-          type="button"
-          onClick={() => addScore(player.id, 1)}
-          data-testid={`add-score-${player.id}`}
-        >
-          +1 to {player.name}
-        </button>
-      ))}
+      <ScoreEntry />
       <button type="button" onClick={newGame} data-testid="new-game">
         New game
       </button>
@@ -73,8 +57,9 @@ export interface AppProps {
  * Item 014 added the app's state container (`GameProvider`/`useGame`) and
  * routing between setup and play. Item 015 replaces the setup placeholder
  * with the real game setup form (`SetupView`); Item 016 replaces the play
- * view's scoreboard placeholder with the real `Scoreboard`. Score entry
- * (Item 017) and the event log (Item 018) remain placeholders.
+ * view's scoreboard placeholder with the real `Scoreboard`; Item 017 adds
+ * the real `ScoreEntry`, retiring the last Item 014 scratch placeholder.
+ * The event log (Item 018) remains unbuilt.
  */
 export function App(props: AppProps = {}): JSX.Element {
   return (
