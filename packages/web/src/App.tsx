@@ -4,14 +4,16 @@ import { GameProvider, useGame } from "./state/index.js";
 import { SetupView } from "./setup/index.js";
 import { Scoreboard } from "./scoreboard/index.js";
 import { ScoreEntry } from "./score-entry/index.js";
+import { EventLog } from "./event-log/index.js";
 
 /**
- * The in-game (play) view: the always-visible scoreboard (Item 016) plus
- * manual score entry (Item 017). The event log (Item 018) is not yet built.
+ * The in-game (play) view: the always-visible scoreboard (Item 016), manual
+ * score entry (Item 017), and the read-only score event log (Item 018).
  *
  * The Item 014 scratch placeholder (`totals-list` + `add-score-*` buttons)
- * is retired here: the `Scoreboard` is the single, real totals display, and
- * `ScoreEntry` is the single, real way to add/adjust points — both read
+ * is retired here: the `Scoreboard` is the single, real totals display,
+ * `ScoreEntry` is the single, real way to add/adjust points, and `EventLog`
+ * is the single, real traceable record of every change — all three read
  * from / dispatch through the same `useGame()` store, so no totals are
  * computed in this component.
  */
@@ -28,6 +30,7 @@ function PlayView(): JSX.Element {
       <h2>Game in progress</h2>
       <Scoreboard />
       <ScoreEntry />
+      <EventLog />
       <button type="button" onClick={newGame} data-testid="new-game">
         New game
       </button>
@@ -59,7 +62,7 @@ export interface AppProps {
  * with the real game setup form (`SetupView`); Item 016 replaces the play
  * view's scoreboard placeholder with the real `Scoreboard`; Item 017 adds
  * the real `ScoreEntry`, retiring the last Item 014 scratch placeholder.
- * The event log (Item 018) remains unbuilt.
+ * Item 018 adds the read-only `EventLog`.
  */
 export function App(props: AppProps = {}): JSX.Element {
   return (
