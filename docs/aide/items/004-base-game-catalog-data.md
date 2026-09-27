@@ -75,6 +75,10 @@ Notes for modelling:
 
 > Maps to Stage 1 deliverable "Tile catalog (base game): data-driven definition of every base-game tile … in one authoritative source format" (the **data** half; format was Item 003). Comprehensive consistency assertions are **Item 005**.
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/004/`.
+
 ## Implementation steps
 
 1. Read the Item 003 format: `packages/core/src/catalog/types.ts`, `loader.ts`, and the existing `data/samples.ts` for the modelling conventions (half-edge naming, field/adjacency, pennants).

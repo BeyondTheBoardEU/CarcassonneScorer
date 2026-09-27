@@ -1,54 +1,64 @@
-# Carcassonne Scorer — Progress
+<!-- aide-template: progress 1 -->
+# Carcassonne Scorer — Progress Tracker
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-23 (Item 018 complete — score event log UI landed in web, satisfying Stage 2's "score event log" deliverable and ticking "Every score change appears in the event log"; Stage 2 still In Progress)
-> **Document role:** Step 3 of the AIDE workflow. Derived from [`vision.md`](./vision.md) and [`roadmap.md`](./roadmap.md). Tracks completion state per stage, deliverable, and acceptance criterion. The queue and work items draw from here. Scope changes happen in the vision first, then propagate to the roadmap, then here.
-
----
+> **Status:** Draft v2 · **Created:** 2026-06-14 · **Last updated:** 2026-09-27 (migrated to the aide-loop format; per-item implementation notes live in [`items/`](items/) and the legacy run records in [`runs/`](runs/))
+> Step 3 of the AIDE loop · mirrors [`roadmap.md`](roadmap.md) · the single
+> source of truth for status; queue state is derived from it, and item specs
+> deliberately carry none.
 
 ## Status legend
 
 | Icon | Meaning |
 |------|---------|
-| 📋 | Planned — not started |
+| 📋 | Planned |
 | 🚧 | In Progress |
+| 🔍 | In Review |
 | ✅ | Complete |
 | ⏸️ | Deferred |
 | ❌ | Excluded |
 
-**Maintenance rule:** Never regress a status back to 📋. Add new items as they appear in the roadmap; do not delete items — mark removed scope ⏸️ Deferred with a note. Preserve all checked acceptance-criteria boxes.
+## Stage summary
+
+| Stage | Title | Objectives | Status |
+|-------|-------|-----------|--------|
+| 1 | Foundation: tile catalog + scoring engine core | G6 | ✅ |
+| 2 | Manual scorepad MVP (base game) | G1, G3, G6 | 🚧 |
+| 3 | Offline durability + review & correction | G3, G4 | 📋 |
+| 4 | End-game tally assistant including farmers | G1, G4 | 📋 |
+| 5 | Expansion coverage (major expansions) | G5, G6 | 📋 |
+| 6 | Recognition foundation: capture, regions, proposed/committed boundary | G2, G4, G5 | 📋 |
+| 7 | Photo-based feature scoring | G2, G4, G5 | 📋 |
+| 8 | Photo-based final scoring | G1, G2, G4, G5 | 📋 |
+| 9 | Board validation | G4, G5 | 📋 |
+
+## Objective coverage
+
+| Objective | Delivered by | Status |
+|-----------|--------------|--------|
+| G1 Eliminate manual tallying | Stages 2, 4, 8 | 🚧 |
+| G2 Fast, correct scoring from a photo | Stages 6, 7, 8 | 📋 |
+| G3 Never lose the running score | Stages 2, 3 | 🚧 |
+| G4 Trustworthy automation | Stages 3, 4, 6, 7, 8, 9 | 📋 |
+| G5 Graceful degradation | Stages 5, 6, 7, 8, 9 | 📋 |
+| G6 Broad coverage | Stages 1, 2, 5 | 🚧 |
 
 ---
 
-## Overall progress
+## Stage 1 — Foundation: tile catalog + scoring engine core — ✅
 
-| Stage | Title | Maturity phase | Status |
-|-------|-------|----------------|--------|
-| 1 | Foundation: tile catalog + scoring engine core | Scorepad | ✅ Complete |
-| 2 | Manual scorepad MVP (base game) | Scorepad | 🚧 In Progress |
-| 3 | Offline durability + review & correction | Scorepad | 📋 Planned |
-| 4 | End-game tally assistant incl. farmers | Scorepad | 📋 Planned |
-| 5 | Expansion coverage (major expansions) | Scorepad | 📋 Planned |
-| 6 | Recognition foundation: capture, regions, proposed/committed | Feature scoring | 📋 Planned |
-| 7 | Photo-based feature scoring | Feature scoring | 📋 Planned |
-| 8 | Photo-based final scoring | Final scoring | 📋 Planned |
-| 9 | Board validation | Validation | 📋 Planned |
+**Goal.** Platform-independent core that scores base-game features from board state, unit-tested. *(Maturity phase: Scorepad · Dependencies: none)*
 
----
+**Deliverables.**
 
-## Stage 1 — Foundation: tile catalog + scoring engine core
+- ✅ Project scaffold separating a platform-independent core (no UI, no platform APIs) from everything else. *(Item 001)*
+- ✅ Board-state model: placed tiles, positions/orientations, and meeple placements, independent of how the state was produced. *(Item 002)*
+- ✅ Tile catalog (base game): data-driven definition of every base-game tile in one authoritative source format — format, loader and rotation helpers (003), all 24 base-game tile types (004). *(Items 003, 004)*
+- ✅ Catalog-validation tests asserting internal consistency (edges match, no malformed tiles). *(Item 005)*
+- ✅ Scoring engine (base game, incremental): completed cities, roads and monasteries with majority/tie meeple ownership — feature extraction (006), ownership (007), city/road scoring (008), monastery scoring and the `scoreBoard` entry point (009). *(Items 006–009)*
+- ✅ Comprehensive unit tests for canonical base-game scenarios (single owner, contested/tied, pennants, monastery completion). *(Item 010)*
 
-**Status:** ✅ Complete · **Maturity phase:** Scorepad · **Dependencies:** none
-**Goal:** Platform-independent core that scores base-game features from board state, unit-tested.
+**Acceptance.**
 
-### Deliverables
-- ✅ Project scaffold separating a platform-independent **core** (no UI, no platform APIs) from everything else.
-- ✅ **Tile catalog (base game):** data-driven definition of every base-game tile — edges (city/road/field/monastery segments) and carriable pieces/features — in one authoritative source format. *(Item 003 ✅: catalog format, typed loader, rotation helpers, and sample tiles complete. Item 004 ✅: all 24 base-game tile types authored and exported as `baseGameTiles`/`baseGameCatalog`.)*
-- ✅ **Board-state model:** representation of placed tiles, positions/orientations, and meeple placements, independent of how the state was produced.
-- ✅ **Scoring engine (base game, incremental):** scores completed cities, roads, and monasteries, including majority/tie meeple ownership. *(Items 006–009 together deliver this. Item 006 ✅: feature extraction — `extractFeatures` groups placed-tile segments into cities/roads/monasteries/fields, with correct completion, meeple attachment, pennant totals, and deterministic ordering — is the foundation for this engine. Item 007 ✅: `resolveOwnership`/`resolveFeatureOwnership` in a new `scoring/` core module implement the majority/tie meeple-ownership rule (empty/single/majority/two-way/three-way tie, kind-agnostic, deterministic, order-independent), exported from `@carcassonne/core`. Item 008 ✅: `scoreCity`/`scoreRoad`/`FeatureScore`/`scoreCompletedCityRoadFeatures` added to `scoring/`, exported from `@carcassonne/core` — completed city = `2*tileCount + 2*pennants`, completed road = `1*tileCount`, credited via Item 007's `resolveOwnership` (ties credit every tied player the full points). Item 009 ✅: `scoreMonastery` (flat 9 points for a completed monastery) plus the unified `scoreCompletedFeatures` aggregator and the `scoreBoard(board, catalog)` engine entry point — returning `BoardScore { features, playerTotals }` — complete the engine; exported from `@carcassonne/core`.)*
-- ✅ Comprehensive unit tests for canonical base-game scenarios (single owner, contested/tied, pennants, monastery completion). *(Item 010 ✅: `packages/core/test/scenarios.test.ts` adds 16 named tests across all 14 required canonical scenarios — single-owner city/road/monastery, single- and multi-pennant cities, contested clear-majority, two-way and three-way ties, a many-tile feature, two separate same-type features, a fully completed mixed board (with a shuffled-order determinism check), unowned completed features, incomplete-feature exclusion, and the empty board — driving the public `scoreBoard(board, catalog)` end to end with exact `points`/`players`/`playerTotals` assertions. No engine bug found; test-only change.)*
-- ✅ Catalog-validation tests asserting internal consistency (edges match, no malformed tiles). *(Item 005 ✅: `checkCatalogConsistency` implemented and exported; all six invariant classes detected; base-game catalog passes with zero issues.)*
-
-### Acceptance criteria
 - [x] Core module has zero UI/platform dependencies and runs in isolation.
 - [x] Engine returns correct scores for completed cities, roads, and monasteries from a hand-authored board state (automated tests).
 - [x] Contested features award points by official majority/tie rules (tests).
@@ -58,21 +68,23 @@
 
 ---
 
-## Stage 2 — Manual scorepad MVP (base game)
+## Stage 2 — Manual scorepad MVP (base game) — 🚧
 
-**Status:** 🚧 In Progress · **Maturity phase:** Scorepad · **Dependencies:** Stage 1
-**Goal:** Usable web app to set up a base-game session and track scores by hand with live totals, persisted locally.
+**Goal.** Usable web app to set up a base-game session and track scores by hand with live totals, persisted locally. *(Maturity phase: Scorepad · Dependencies: Stage 1)*
 
-### Deliverables
-- ✅ **Game setup:** 2–6 players, name + meeple colour from the standard set; colour selection does not rely on colour alone (label/pattern). *(Item 013 ✅: the standard meeple colour set landed in `packages/core/src/colours/` — `MeepleColour` type, `meepleColours` (6 entries: red, blue, green, yellow, black, and the documented sixth, gray), `getMeepleColour`/`hasMeepleColour`/`meepleColourIds` accessors, all exported from `@carcassonne/core`. Each colour carries a unique `id` and a distinct non-colour `pattern` token (solid/stripes/dots/checks/crosshatch/diagonal), satisfying the accessibility NFR at the data layer. No DOM, no cyclic imports. This is the colour-set *data*; the setup UI that assigns/enforces distinct colours per player is Item 015. Item 015 ✅: the real setup screen landed in `packages/web/src/setup/` (`SetupView`/`PlayerRow`/`ColourPicker`), replacing the Item 014 placeholder — 2–6 player rows (add/remove disabled at the bounds, reusing the core's exported `MIN_PLAYERS`/`MAX_PLAYERS`), a name input + colour `<select>` per row sourced from `meepleColours`, already-taken colours rendered as disabled `<option>`s so the chosen set stays distinct, each option's visible text carries the non-colour cue ("{name} ({pattern})"), empty names default to "Player N", and "Start game" calls `useGame().startGame` → core `createSession`, routing the shell to the in-game view; a `SessionError` backstop is caught and shown inline instead of crashing. This satisfies the Stage 2 acceptance criterion "Set up a 2–6 player game, name players, assign distinct meeple colours.")*
-- ✅ **Manual score entry:** add or adjust points for any player at any time. *(Item 017 ✅: `packages/web/src/score-entry/` (`ScoreEntry.tsx` + `PlayerEntryRow.tsx`) renders one entry row per `session.players`, each offering quick +1/+2/+5/-1 buttons and a custom-amount form (signed integer, optional reason). Every control dispatches via `useGame().addScore(playerId, delta, reason?)` → core `addScoreEvent`, with no tally arithmetic in the component; the scoreboard total updates immediately, recomputed by the core's `computeTotals`. A zero/blank/non-integer custom amount is rejected (no event dispatched). Composed into `PlayView` in `App.tsx`, retiring the Item 014 scratch `totals-list`/`add-score-*` placeholder noted as a follow-up in Item 016's check, while keeping the real "new game" control; `App.test.tsx`'s seeded-session assertion now targets the real `scoreboard-total-p1` testid. 13 new RTL tests in `packages/web/test/score-entry.test.tsx` cover quick increment/decrement, custom +/- (incl. net), zero/blank/non-integer rejection, reason-carrying (asserted against real dispatched `ScoreEvent` state via a test-only `SessionHarness`), independent entry across 3 players, and placeholder retirement.)*
-- ✅ **Score event log:** every change recorded as a traceable event (who, how many, when/why). *(Item 018 ✅: `packages/web/src/event-log/` (`EventLog.tsx` + `EventLogRow.tsx`) renders every entry in `session.events` — player name + non-colour cue, signed point delta ("+5"/"−3" with an a11y "plus/minus N points" label), a readable local timestamp, and the reason when present — read directly from `useGame()` with no arithmetic. Composed into `PlayView` (`App.tsx`) alongside the Item 016 `Scoreboard` and Item 017 `ScoreEntry`. Entries render newest-first (a reversed shallow copy of the append-ordered array, documented in a doc comment and covered by an order-specific test); an empty session shows "No score changes yet"; the component is read-only (no edit/reverse controls) and does no tally arithmetic. 7 new RTL tests in `packages/web/test/event-log.test.tsx` cover all-entries-rendered, live append on a new `addScore`, explicit +/− sign, empty state, newest-first ordering, and the read-only guarantee.)*
-- ✅ **Running scoreboard:** always-visible current totals per player, readable at a glance. *(Item 016 ✅: `packages/web/src/scoreboard/` (`Scoreboard.tsx` + `PlayerScoreRow.tsx`) renders every `session.players` entry — meeple colour swatch, a visible non-colour cue (name + pattern, e.g. "(Red, solid)"), and the current total — reading `session`/`totals` from `useGame()` with no arithmetic of its own (`totals[player.id] ?? 0`). Composed into the play view (`App.tsx`), replacing the Item 014 placeholder's scoreboard role. Accessible `aria-label` per row ("Alice (Red): 8 points"); colour swatch is `aria-hidden` decorative since the visible text and label independently carry the cue. 6 new RTL tests (`packages/web/test/scoreboard.test.tsx`) cover all-players-rendered, correct seeded totals incl. 0 for a no-event player, store-driven reactivity, the accessible label, and session-order rendering. Known minor follow-up: a leftover duplicate `totals-list` placeholder remains in `App.tsx`'s `PlayView`, kept only to avoid touching `App.test.tsx`'s existing testid assertions — slated for removal at the start of Item 017.)*
-- 📋 **Local persistence (first cut):** game state and event log saved to local storage; reload restores the in-progress game.
-- 🚧 Thin UI over the Stage 1 core; no scoring logic duplicated in the UI. *(Item 011 🚧: web scaffold established — new `@carcassonne/web` workspace package (React 18 + Vite 5 + TypeScript) in `packages/web`, rendering a value imported from `@carcassonne/core` to prove the UI→core wiring; Vitest workspace projects keep core tests on `node` and add jsdom component tests for web; root `lint`/`build`/`test` gate extended to cover both packages; core boundary (no DOM in `packages/core`) preserved. Item 014 ✅: app state store and game-shell lifecycle landed — `GameProvider`/`useGame()` (React Context + `useReducer`, no new dependency) in `packages/web/src/state/`, holding `{ session: GameSession | null }` and exposing `totals` (always via the core's `computeTotals`), `startGame`/`addScore`/`newGame` delegating to the core's `createSession`/`addScoreEvent`; `App.tsx` now routes between minimal setup/play placeholders driven purely by `session` state, with a `initialSession` hydrate seam for Item 019 and tests. This is the single seam Items 015–018 bind to. Deliverable completes as Items 012–020 land.)*
-- 🚧 **Score model / totals from the core:** *(Item 012 🚧: platform-independent manual-scorepad domain added in `packages/core/src/session/` — `Player`, `ScoreEvent`, `GameSession`, `SESSION_VERSION` (plus `MIN_PLAYERS`/`MAX_PLAYERS` = 2/6, defined once), `SessionError`, immutable `createSession`/`addScoreEvent` constructors, and a pure `computeTotals` tally reducer; all exported from `@carcassonne/core`. No board/catalog/scoreBoard coupling; JSON-serializable shapes (round-trip tested); 18 new tests in `packages/core/test/session.test.ts`. This is the "totals come from the core" engine the setup/scoreboard/log/persistence UI items (013–019) will bind to; it does not by itself satisfy a user-facing Stage 2 acceptance criterion. Item 014 ✅: the web store now wires up to this engine — `totals` is produced exclusively by `computeTotals(session)` (`useMemo`'d, never summed in the store/components), and `startGame`/`addScore` delegate to `createSession`/`addScoreEvent` with the store supplying `id`/`timestamp` at dispatch as the sole impure boundary. Still does not by itself tick a user-facing Stage 2 acceptance criterion — the setup/scoreboard/entry/log UI (Items 015–018) is what makes this visible to a user.)*
+**Deliverables.**
 
-### Acceptance criteria
+- ✅ Thin UI over the Stage 1 core; no scoring logic duplicated in the UI — web scaffold (011), app state store and game-shell lifecycle (014). *(Items 011, 014)*
+- ✅ Score model / totals from the core: platform-independent session model and `computeTotals` tally reducer. *(Item 012)*
+- ✅ Game setup: 2–6 players, name + meeple colour from the standard set; colour selection does not rely on colour alone — accessible colour-set data (013), setup UI (015). *(Items 013, 015)*
+- ✅ Running scoreboard: always-visible current totals per player, readable at a glance. *(Item 016)*
+- ✅ Manual score entry: add or adjust points for any player at any time. *(Item 017)*
+- ✅ Score event log: every change recorded as a traceable event (who, how many, when/why). *(Item 018)*
+- 🚧 Local persistence (first cut): game state and event log saved to local storage; reload restores the in-progress game. *(Item 019)*
+- 📋 Stage 2 acceptance end-to-end suite driving the assembled app through every Stage 2 criterion. *(Item 020)*
+
+**Acceptance.**
+
 - [x] Set up a 2–6 player game, name players, assign distinct meeple colours.
 - [x] Add/adjust points for any player; totals update immediately. *(Item 016 delivered the "totals update immediately" / always-visible half via the live `Scoreboard`; Item 017 ✅ adds the "add/adjust points for any player" entry controls — quick increments and a custom +/- amount, dispatched via `addScore` for any player in the session.)*
 - [x] Every score change appears in the event log. *(Item 018 ✅: the `EventLog` component renders every entry in `session.events` in sync with count and content, in a documented newest-first deterministic order; verified by the checker against dispatched `addScore` events.)*
@@ -83,19 +95,20 @@
 
 ---
 
-## Stage 3 — Offline durability + review & correction
+## Stage 3 — Offline durability + review & correction — 📋
 
-**Status:** 📋 Planned · **Maturity phase:** Scorepad · **Dependencies:** Stage 2
-**Goal:** Make the scorepad installable and fully offline; make every score change reviewable and reversible.
+**Goal.** Make the scorepad installable and fully offline; make every score change reviewable and reversible. *(Maturity phase: Scorepad · Dependencies: Stage 2)*
 
-### Deliverables
-- 📋 **PWA installability:** install (home-screen/standalone) and launch without a network.
-- 📋 **Offline operation:** full scorepad functionality with no network, verified with network disabled.
-- 📋 **Durability hardening:** state survives reload, crash/abrupt close, and device sleep; writes atomic enough that a partial write cannot corrupt the game.
-- 📋 **Review & correction UI:** browse the score event log; edit or reverse any past entry with totals recomputing correctly.
-- 📋 **Game lifecycle:** start a new game, end/finalise the current game, resume an unfinished game.
+**Deliverables.**
 
-### Acceptance criteria
+- 📋 PWA installability: install (home-screen/standalone) and launch without a network.
+- 📋 Offline operation: full scorepad functionality with no network, verified with network disabled.
+- 📋 Durability hardening: state survives reload, crash/abrupt close, and device sleep; writes atomic enough that a partial write cannot corrupt the game.
+- 📋 Review & correction UI: browse the score event log; edit or reverse any past entry with totals recomputing correctly.
+- 📋 Game lifecycle: start a new game, end/finalise the current game, resume an unfinished game.
+
+**Acceptance.**
+
 - [ ] App installs and opens with the network fully disabled and stays functional.
 - [ ] Killing the app/tab mid-game and reopening restores it without loss or corruption.
 - [ ] Any logged score event can be edited or reversed; totals reconcile correctly.
@@ -105,18 +118,19 @@
 
 ---
 
-## Stage 4 — End-game tally assistant including farmers
+## Stage 4 — End-game tally assistant including farmers — 📋
 
-**Status:** 📋 Planned · **Maturity phase:** Scorepad · **Dependencies:** Stage 1, Stage 3
-**Goal:** Guide players through end-of-game final scoring, including manual farmer/field scoring, with a verifiable per-player breakdown.
+**Goal.** Guide players through end-of-game final scoring, including manual farmer/field scoring, with a verifiable per-player breakdown. *(Maturity phase: Scorepad · Dependencies: Stage 1, Stage 3)*
 
-### Deliverables
-- 📋 **Final-scoring engine (base game):** end-game scoring of incomplete cities/roads, monasteries, and **farmer/field scoring** (fields scored by completed bordering cities, with field-majority ownership), unit-tested.
-- 📋 **Guided end-game flow:** step-by-step UI walking the scorekeeper through each end-game category to confirm or enter values per feature.
-- 📋 **Per-player breakdown:** final total decomposed by category (completed, incomplete, monasteries, farmers).
-- 📋 **Finalised result:** reviewed end-game tally becomes the official final scoreboard.
+**Deliverables.**
 
-### Acceptance criteria
+- 📋 Final-scoring engine (base game): end-game scoring of incomplete cities/roads, monasteries, and farmer/field scoring (fields scored by completed bordering cities, with field-majority ownership), unit-tested.
+- 📋 Guided end-game flow: step-by-step UI walking the scorekeeper through each end-game category to confirm or enter values per feature.
+- 📋 Per-player breakdown: final total decomposed by category (completed, incomplete, monasteries, farmers).
+- 📋 Finalised result: reviewed end-game tally becomes the official final scoreboard.
+
+**Acceptance.**
+
 - [ ] Final-scoring engine computes farmer/field scores correctly for canonical layouts (automated tests).
 - [ ] User can run the guided end-game flow to completion and produce a final scoreboard.
 - [ ] Final total shown broken down per player and per category.
@@ -126,20 +140,21 @@
 
 ---
 
-## Stage 5 — Expansion coverage (major expansions)
+## Stage 5 — Expansion coverage (major expansions) — 📋
 
-**Status:** 📋 Planned · **Maturity phase:** Scorepad · **Dependencies:** Stage 1, Stage 4
-**Goal:** Extend catalog and scoring engine to the major/common expansions so coverage holds up under enthusiast play.
+**Goal.** Extend catalog and scoring engine to the major/common expansions so coverage holds up under enthusiast play. *(Maturity phase: Scorepad · Dependencies: Stage 1, Stage 4)*
 
-### Deliverables
-- 📋 **Defined supported set:** explicit list of targeted major expansions (recorded here and in the catalog); anything outside is unsupported.
-- 📋 **Catalog extension:** targeted expansions' tiles/pieces added to the single catalog in the same authoritative format.
-- 📋 **Scoring rules per expansion:** incremental and end-game rules per supported expansion in the core engine.
-- 📋 **Setup support:** game setup lets players enable the expansions in play.
-- 📋 **Expanded test suite:** scoring scenarios per expansion, including interactions with base-game scoring.
-- 📋 **Loud failure for unsupported pieces:** anything outside the supported set is clearly flagged, never silently mis-scored.
+**Deliverables.**
 
-### Acceptance criteria
+- 📋 Defined supported set: explicit list of targeted major expansions (recorded here and in the catalog); anything outside is unsupported.
+- 📋 Catalog extension: targeted expansions' tiles/pieces added to the single catalog in the same authoritative format.
+- 📋 Scoring rules per expansion: incremental and end-game rules per supported expansion in the core engine.
+- 📋 Setup support: game setup lets players enable the expansions in play.
+- 📋 Expanded test suite: scoring scenarios per expansion, including interactions with base-game scoring.
+- 📋 Loud failure for unsupported pieces: anything outside the supported set is clearly flagged, never silently mis-scored.
+
+**Acceptance.**
+
 - [ ] Supported-expansion set is explicitly documented.
 - [ ] Each supported expansion's tiles exist in the single catalog and pass consistency checks.
 - [ ] Incremental and end-game scoring per supported expansion are correct (automated tests).
@@ -150,19 +165,20 @@
 
 ---
 
-## Stage 6 — Recognition foundation: capture, regions, proposed/committed boundary
+## Stage 6 — Recognition foundation: capture, regions, proposed/committed boundary — 📋
 
-**Status:** 📋 Planned · **Maturity phase:** Feature scoring · **Dependencies:** Stage 3, Stage 1
-**Goal:** Introduce the camera and the proposed-vs-committed boundary, with capture and region selection feeding a board-state model — before any automated interpretation is trusted.
+**Goal.** Introduce the camera and the proposed-vs-committed boundary, with capture and region selection feeding a board-state model — before any automated interpretation is trusted. *(Maturity phase: Feature scoring · Dependencies: Stage 3, Stage 1)*
 
-### Deliverables
-- 📋 **Photo capture:** capture an image of the board (or part) from the device camera, on-device, no upload.
-- 📋 **Region selection UI:** indicate a region (draw/tap-to-select) to constrain what gets scored.
-- 📋 **Recognition-layer interface:** defined boundary taking an image (+ optional region) and returning a partial board state or explicit "cannot interpret." Initial impl may stub to manual entry.
-- 📋 **Proposed vs committed score:** score-state model gains a clear separation between *proposed* and *committed* results; nothing automated commits without explicit human confirm.
-- 📋 **Review-and-apply flow shell:** UI flow showing a proposed result with confirm (commit) or reject/correct.
+**Deliverables.**
 
-### Acceptance criteria
+- 📋 Photo capture: capture an image of the board (or part) from the device camera, on-device, no upload.
+- 📋 Region selection UI: indicate a region (draw/tap-to-select) to constrain what gets scored.
+- 📋 Recognition-layer interface: defined boundary taking an image (+ optional region) and returning a partial board state or explicit "cannot interpret"; initial impl may stub to manual entry.
+- 📋 Proposed vs committed score: score-state model gains a clear separation between proposed and committed results; nothing automated commits without explicit human confirm.
+- 📋 Review-and-apply flow shell: UI flow showing a proposed result with confirm (commit) or reject/correct.
+
+**Acceptance.**
+
 - [ ] App captures a board photo on-device with no network upload.
 - [ ] User can select a region of a captured photo.
 - [ ] Recognition interface can return "cannot interpret," and that path cleanly offers manual entry.
@@ -173,19 +189,20 @@
 
 ---
 
-## Stage 7 — Photo-based feature scoring
+## Stage 7 — Photo-based feature scoring — 📋
 
-**Status:** 📋 Planned · **Maturity phase:** Feature scoring · **Dependencies:** Stage 6, Stage 5, Stage 4
-**Goal:** Photograph a completed structure (or selected region) and receive a correct, reviewable score that can be applied to the scoreboard.
+**Goal.** Photograph a completed structure (or selected region) and receive a correct, reviewable score that can be applied to the scoreboard. *(Maturity phase: Feature scoring · Dependencies: Stage 6, Stage 5, Stage 4)*
 
-### Deliverables
-- 📋 **Single-feature recognition:** turn a photo of a completed city/road/monastery (or selected region) into the board state needed to score it.
-- 📋 **Feature scoring from photo:** run the Stage 1/Stage 5 engine over the recognised feature.
-- 📋 **Reviewable result:** show recognised feature, computed score, and credited meeples/players before applying.
-- 📋 **Apply to scoreboard:** on confirmation, committed as a normal logged score event (reviewable/reversible via Stage 3).
-- 📋 **Clear failure + fallback:** uninterpretable photo says so plainly and offers manual entry for that feature.
+**Deliverables.**
 
-### Acceptance criteria
+- 📋 Single-feature recognition: turn a photo of a completed city/road/monastery (or selected region) into the board state needed to score it.
+- 📋 Feature scoring from photo: run the Stage 1/Stage 5 engine over the recognised feature.
+- 📋 Reviewable result: show recognised feature, computed score, and credited meeples/players before applying.
+- 📋 Apply to scoreboard: on confirmation, committed as a normal logged score event (reviewable/reversible via Stage 3).
+- 📋 Clear failure + fallback: uninterpretable photo says so plainly and offers manual entry for that feature.
+
+**Acceptance.**
+
 - [ ] For a clearly photographed completed feature, the app proposes the correct score and correct meeple/player crediting.
 - [ ] Proposed result must be confirmed before it affects committed totals.
 - [ ] A confirmed photo score appears in the event log and is reversible like any manual entry.
@@ -196,19 +213,20 @@
 
 ---
 
-## Stage 8 — Photo-based final scoring
+## Stage 8 — Photo-based final scoring — 📋
 
-**Status:** 📋 Planned · **Maturity phase:** Final scoring · **Dependencies:** Stage 7, Stage 4, Stage 5
-**Goal:** Photograph the finished board and produce the complete end-of-game tally automatically — including farmers — fully reviewable before it becomes official.
+**Goal.** Photograph the finished board and produce the complete end-of-game tally automatically — including farmers — fully reviewable before it becomes official. *(Maturity phase: Final scoring · Dependencies: Stage 7, Stage 4, Stage 5)*
 
-### Deliverables
-- 📋 **Full-board recognition:** turn a photo (or set of photos) of the finished board into a complete board state.
-- 📋 **Full final scoring from photo:** run the Stage 4/Stage 5 end-game engine — incomplete cities/roads, monasteries, and **farmer/field scoring** across the whole board — over the recognised state.
-- 📋 **Per-player breakdown:** complete computed final score decomposed per player and per category.
-- 📋 **Whole-result review:** entire computed final tally presented for human review and correction before it becomes official.
-- 📋 **Partial-recognition handling:** unreadable parts fail loudly and drop to manual entry while the rest is computed.
+**Deliverables.**
 
-### Acceptance criteria
+- 📋 Full-board recognition: turn a photo (or set of photos) of the finished board into a complete board state.
+- 📋 Full final scoring from photo: run the Stage 4/Stage 5 end-game engine — incomplete cities/roads, monasteries, and farmer/field scoring across the whole board — over the recognised state.
+- 📋 Per-player breakdown: complete computed final score decomposed per player and per category.
+- 📋 Whole-result review: entire computed final tally presented for human review and correction before it becomes official.
+- 📋 Partial-recognition handling: unreadable parts fail loudly and drop to manual entry while the rest is computed.
+
+**Acceptance.**
+
 - [ ] For a clearly photographed finished base-game board, the app produces a complete final tally including correct farmer scoring.
 - [ ] Full computed result shown per-player and per-category and correctable before finalising.
 - [ ] No computed final result becomes official without explicit human confirmation.
@@ -218,19 +236,20 @@
 
 ---
 
-## Stage 9 — Board validation
+## Stage 9 — Board validation — 📋
 
-**Status:** 📋 Planned · **Maturity phase:** Validation · **Dependencies:** Stage 1, Stage 8, Stage 5
-**Goal:** Detect illegal tile placements and configurations and report them clearly for human judgement — assist and flag, never override.
+**Goal.** Detect illegal tile placements and configurations and report them clearly for human judgement — assist and flag, never override. *(Maturity phase: Validation · Dependencies: Stage 1, Stage 8, Stage 5)*
 
-### Deliverables
-- 📋 **Validation engine:** platform-independent logic checking a board state against the catalog for illegal placements/configurations (edge mismatches, illegal adjacencies, invalid meeple placements).
-- 📋 **Validation from recognised or known state:** run validation over board state from recognition (Stage 8) or otherwise known state.
-- 📋 **Clear reporting:** for each flagged issue, explain *what* appears wrong and *where*.
-- 📋 **Advisory only:** flags surfaced for human decision; never auto-correct or override.
-- 📋 **Validation test suite:** legal and illegal configurations across base game and supported expansions.
+**Deliverables.**
 
-### Acceptance criteria
+- 📋 Validation engine: platform-independent logic checking a board state against the catalog for illegal placements/configurations (edge mismatches, illegal adjacencies, invalid meeple placements).
+- 📋 Validation from recognised or known state: run validation over board state from recognition (Stage 8) or otherwise known state.
+- 📋 Clear reporting: for each flagged issue, explain what appears wrong and where.
+- 📋 Advisory only: flags surfaced for human decision; never auto-correct or override.
+- 📋 Validation test suite: legal and illegal configurations across base game and supported expansions.
+
+**Acceptance.**
+
 - [ ] Validation engine correctly flags canonical illegal configurations and passes legal ones (automated tests).
 - [ ] Each flag identifies what is wrong and where, in terms a player can act on.
 - [ ] Validation never modifies the score or board on its own — it only reports.
@@ -240,13 +259,7 @@
 
 ---
 
-## Cross-cutting / deferred items
+## Cross-cutting notes
 
-- ⏸️ **Native mobile apps** (vision §5.2) — intentionally not a stage in the current roadmap. The platform-independent core (Stages 1, 4, 5) is built so a native target can reuse it later; to be added as a stage when prioritised, after the web maturity curve is complete.
+- **Native mobile apps** (vision §5.2) — intentionally not a stage in the current roadmap. The platform-independent core (Stages 1, 4, 5) is built so a native target can reuse it later; to be added as a new stage when prioritised, after the web maturity curve is complete.
 - **Accessibility / performance / privacy NFRs** — not a separate stage; embedded in the acceptance criteria where they first apply (colour-blind-safe colours in Stage 2, durability in Stage 3, on-device/no-upload in Stage 6, "seconds" in Stage 7).
-
----
-
-## Next Step
-
-Review this progress file. When you're ready, start a **new chat session** and run `/speckit.aide.create-queue` to generate the first batch of prioritized work items.

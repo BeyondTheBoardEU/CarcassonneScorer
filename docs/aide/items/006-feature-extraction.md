@@ -97,6 +97,10 @@ function extractFeatures(board: BoardState, catalog: Catalog): Feature[];
 
 > Maps to queue Item 006 ("feature-extraction function with unit tests over hand-authored boards") and the Stage 1 deliverable "foundation for the scoring engine." Note: this item does **not** by itself tick any Stage 1 *acceptance criterion* in progress.md — those require scoring (Items 007–010). It marks the queue item / deliverable progress only.
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/006/`.
+
 ## Implementation steps
 
 1. Read the model: `packages/core/src/board/{types,geometry}.ts`, `packages/core/src/catalog/{types,rotate}.ts`, and a few `data/base-game.ts` tiles (A, B, C, and a straight road/city tile) to ground fixtures.

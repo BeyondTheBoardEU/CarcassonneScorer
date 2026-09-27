@@ -39,6 +39,10 @@ This delivers the Stage 2 "score event log" deliverable and the acceptance crite
 
 > Maps to the Stage 2 deliverable "score event log" and **satisfies** the acceptance criterion "Every score change appears in the event log."
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/018/`.
+
 ## Implementation steps
 
 1. Review `packages/web/src/state/useGame` (`session.events`/`session.players`), `@carcassonne/core` `ScoreEvent` shape (`playerId`, `delta`, `timestamp`, `reason?`) + `getMeepleColour`, and the Item 016/017 play-view composition.

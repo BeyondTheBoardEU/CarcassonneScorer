@@ -62,6 +62,10 @@ Exact file layout may vary — e.g. `packages/core/src/scoring/{ownership,index}
 
 > Maps to the Stage 1 deliverable "Scoring engine … including majority/tie meeple ownership." The Stage 1 acceptance criterion "Contested features award points by official majority/tie rules" is satisfied end-to-end once Items 008/009 credit points via this resolver; do not tick it in this item.
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/007/`.
+
 ## Implementation steps
 
 1. Read `packages/core/src/features/types.ts` (`Feature`, `FeatureMeeple`) to reuse the meeple shape.

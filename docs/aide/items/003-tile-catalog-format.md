@@ -57,6 +57,10 @@ function rotateHalfEdge(h: HalfEdge, rotation: Rotation): HalfEdge;
 
 > Maps to Stage 1 deliverable "Tile catalog (base game): data-driven definition … in one authoritative source format" (format half; data is Item 004) and supports principle 2.
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/003/`.
+
 ## Implementation steps
 
 1. Add `packages/core/src/catalog/types.ts` with the schema above.

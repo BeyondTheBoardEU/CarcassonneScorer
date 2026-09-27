@@ -39,6 +39,10 @@ This delivers the Stage 2 "manual score entry" deliverable and the acceptance cr
 
 > Maps to the Stage 2 deliverable "manual score entry" and **satisfies** the acceptance criterion "Add/adjust points for any player; totals update immediately." Combined with Item 016 it concretely demonstrates "No scoring arithmetic in the UI — totals come from the core."
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/017/`.
+
 ## Implementation steps
 
 1. Review `packages/web/src/state/useGame` (`addScore`), the Item 016 `Scoreboard` (testids/layout), and the current `App.tsx` `PlayView` placeholder + `App.test.tsx` assertions to reconcile.

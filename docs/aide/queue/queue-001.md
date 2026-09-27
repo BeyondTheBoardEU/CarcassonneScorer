@@ -1,6 +1,6 @@
 # Carcassonne Scorer — Work Queue 001
 
-> **Status:** Active · **Created:** 2026-06-14
+> **Created:** 2026-06-14
 > **Document role:** Step 4 of the AIDE workflow. Derived from [`vision.md`](../vision.md), [`roadmap.md`](../roadmap.md), and [`progress.md`](../progress.md). A prioritized batch of the next ~10 actionable work items. Each item is testable locally and the batch is sized for roughly a week.
 
 ---
@@ -57,4 +57,4 @@ When all ten items are complete, **Stage 1** is done: the platform-independent c
 
 ## Next Step
 
-Select an item from this queue (start with **Item 001**) and open a **new chat session**. Run `/speckit.aide.create-item` with the item description to produce a detailed work-item specification. When this queue is exhausted, run `/speckit.aide.create-queue` again to generate `queue-002.md` starting at Item 011.
+Queue state is derived from [`progress.md`](../progress.md), never declared here. Run `/aide-run-queue` to claim and drive the remaining items (spec → tests → build → validate → merge); when every queue is done, `/aide-create-queue` (or `/aide-run-roadmap`) authors the next batch.

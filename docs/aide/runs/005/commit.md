@@ -3,7 +3,7 @@
 - Status: committed
 - Date: 2026-06-16
 - Branch: aide/item-005
-- Commit: (pending)
+- Commit: 01bc365
 - Subject: feat(item-005): catalog-consistency validation tests
 
 ## Files committed

@@ -65,6 +65,10 @@ Exact file layout may vary — e.g. add `packages/core/src/scoring/feature-score
 
 > Maps to the Stage 1 deliverable "Scoring engine (base game, incremental): scores completed cities, roads …". Combined with Item 009 (monasteries + engine) this begins satisfying the Stage 1 acceptance criterion "Engine returns correct scores for completed cities, roads, and monasteries …"; the contested-feature criterion is exercised here for cities/roads via Item 007. See Completion Reminder for which boxes to tick.
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/008/`.
+
 ## Implementation steps
 
 1. Read `packages/core/src/features/types.ts` (`Feature`), `packages/core/src/scoring/ownership.ts` (`resolveOwnership`), and the Item 006 `feature-extraction.test.ts` fixtures (for closed-city / closed-road construction patterns).

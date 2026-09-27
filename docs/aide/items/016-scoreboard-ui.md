@@ -38,6 +38,10 @@ This replaces the play-view placeholder's scoreboard portion from Item 014 and d
 
 > Maps to the Stage 2 deliverable "running scoreboard" and the acceptance criterion "always-visible per-player totals." It also concretely demonstrates "No scoring arithmetic in the UI — totals come from the core" (with Item 014); that criterion is finally ticked once score entry (Item 017) shows live updates end-to-end (or at Item 020).
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/016/`.
+
 ## Implementation steps
 
 1. Review `packages/web/src/state/useGame` (`session`, `totals`), `@carcassonne/core` `getMeepleColour`/`MeepleColour`, and the Item 014 play-view placeholder.

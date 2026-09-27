@@ -1,0 +1,32 @@
+{
+  "//": [
+    "AIDE settings overlay — project-owned, like aide.toml. .claude/settings.json is",
+    "REGENERATED from the framework default plus this file on every install/--update:",
+    "edit THIS file, never settings.json. Lists use { \"add\": [...], \"remove\": [...] }.",
+    "",
+    "Project additions: the npm/npx toolchain this TypeScript monorepo is built and",
+    "tested with (aide.toml test_command = npm test), so unattended runs never stall",
+    "on a prompt. git.mode = local: nothing is ever pushed, so push stays denied."
+  ],
+  "permissions": {
+    "allow": {
+      "add": [
+        "Bash(npm test:*)",
+        "Bash(npm run test:*)",
+        "Bash(npm run lint:*)",
+        "Bash(npm run build:*)",
+        "Bash(npm run format:*)",
+        "Bash(npm ci:*)",
+        "Bash(npx tsc:*)",
+        "Bash(npx vitest:*)",
+        "Bash(npx eslint:*)",
+        "Bash(npx prettier:*)"
+      ]
+    },
+    "deny": {
+      "add": [
+        "Bash(git push:*)"
+      ]
+    }
+  }
+}

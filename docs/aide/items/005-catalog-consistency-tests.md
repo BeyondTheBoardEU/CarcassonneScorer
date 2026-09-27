@@ -54,6 +54,10 @@ Catalog-level: the checker runs every per-tile invariant across all tiles and ag
 
 > Maps to Stage 1 deliverable "Catalog-validation tests" and satisfies the Stage 1 acceptance criterion "Base-game catalog passes internal-consistency checks."
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/005/`.
+
 ## Implementation steps
 
 1. Read the model: `packages/core/src/catalog/types.ts`, `loader.ts` (existing validations to avoid duplicating), and `data/base-game.ts` (the data under test).

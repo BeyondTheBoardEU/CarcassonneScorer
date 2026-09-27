@@ -39,6 +39,10 @@ This replaces the setup placeholder from Item 014 and delivers the first user-fa
 
 > Maps to the Stage 2 deliverable "game setup" and **satisfies** the Stage 2 acceptance criterion "Set up a 2–6 player game, name players, assign distinct meeple colours."
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/015/`.
+
 ## Implementation steps
 
 1. Review `packages/web/src/state/` (`useGame`, `startGame`, `GameSession`/`Player` shapes), `@carcassonne/core` `meepleColours`/`getMeepleColour`, and the Item 014 setup placeholder + its test for conventions.

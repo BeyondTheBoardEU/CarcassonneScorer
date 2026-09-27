@@ -12,7 +12,7 @@ Each **stage** delivers a demonstrable, testable version of the product that bui
 - **Goal** — the one-sentence outcome the stage exists to achieve.
 - **Deliverables** — the specific, concrete things built.
 - **Dependencies** — which earlier stages must be complete first.
-- **Acceptance criteria** — how we know the stage is done and demonstrable.
+- **Validation / acceptance** — how we know the stage is done and demonstrable (mirrored as `progress.md` acceptance boxes).
 - **Vision trace** — which vision goals/features/principles the stage advances.
 
 The progression honours the vision's committed architectural principles from the start: a **single tile catalog** drives everything (Stage 1), the **core is platform-independent** (Stages 1, 4), the **running score is never lost and works offline** (Stages 2–3), **automation is always reviewable** (the proposed/committed boundary appears the moment recognition does, Stage 6), and **unsupported input fails loudly** (Stages 7–9).
@@ -33,6 +33,19 @@ The progression honours the vision's committed architectural principles from the
 | 8 | Photo-based final scoring | Final scoring | Photograph the finished board, get the complete reviewable end-game tally incl. farmers. |
 | 9 | Board validation | Validation | Detect and clearly report illegal placements/configurations for human judgement. |
 
+### Objective → stage coverage
+
+Derived from each stage's **Vision trace** line below.
+
+| Objective | Delivered by |
+|-----------|--------------|
+| G1 Eliminate manual tallying | Stages 2, 4, 8 |
+| G2 Fast, correct scoring from a photo | Stages 6, 7, 8 |
+| G3 Never lose the running score | Stages 2, 3 |
+| G4 Trustworthy automation | Stages 3, 4, 6, 7, 8, 9 |
+| G5 Graceful degradation | Stages 5, 6, 7, 8, 9 |
+| G6 Broad coverage | Stages 1, 2, 5 |
+
 ---
 
 ## Stage 1 — Foundation: tile catalog + scoring engine core
@@ -51,7 +64,7 @@ This stage builds no UI. It establishes the architectural spine the entire produ
 
 **Dependencies:** none.
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - The core module has zero UI or platform dependencies and can be imported and exercised in isolation.
 - Given a hand-authored board state, the engine returns correct scores for completed cities, roads, and monasteries, verified by automated tests.
 - Contested features award points by the official majority/tie rules, verified by tests.
@@ -77,7 +90,7 @@ This is the first demonstrable product: pen-and-paper replacement. It wraps the 
 
 **Dependencies:** Stage 1.
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - A user can set up a 2–6 player game, name players, and assign distinct meeple colours.
 - Points can be added/adjusted for any player and totals update immediately.
 - Every score change appears in the event log.
@@ -103,7 +116,7 @@ This stage hardens the durability and trust guarantees the vision treats as arch
 
 **Dependencies:** Stage 2.
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - The app installs and opens with the network fully disabled and remains fully functional.
 - Killing the app/tab mid-game and reopening restores the game without loss or corruption.
 - Any logged score event can be edited or reversed, and totals reconcile correctly afterward.
@@ -127,7 +140,7 @@ Still fully manual, but this removes the hardest arithmetic and rules lookup of 
 
 **Dependencies:** Stage 1 (catalog/board state), Stage 3 (lifecycle + review).
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - The final-scoring engine computes farmer/field scores correctly for canonical layouts, verified by automated tests.
 - A user can run the guided end-game flow to completion and produce a final scoreboard.
 - The final total is shown broken down per player and per category.
@@ -153,7 +166,7 @@ This is where the single-catalog discipline pays off: expansions are added as ca
 
 **Dependencies:** Stage 1, Stage 4 (so both incremental and end-game scoring extend together).
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - The supported-expansion set is explicitly documented.
 - Each supported expansion's tiles exist in the single catalog and pass consistency checks.
 - Incremental and end-game scoring for each supported expansion are correct per the official rules, verified by automated tests.
@@ -179,7 +192,7 @@ This stage builds the scaffolding that makes photo scoring trustworthy. The reco
 
 **Dependencies:** Stage 3 (score state + review), Stage 1 (board-state model).
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - The app can capture a board photo on-device without any network upload.
 - The user can select a region of a captured photo.
 - The recognition interface can return "cannot interpret," and that path cleanly offers manual entry.
@@ -205,7 +218,7 @@ The first real automation payoff, delivered behind the Stage 6 review boundary.
 
 **Dependencies:** Stage 6, Stage 5 (scoring coverage), Stage 4 (engine maturity).
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - For a clearly photographed completed feature, the app proposes the correct score and the correct crediting of meeples/players.
 - The proposed result must be confirmed before it affects committed totals.
 - A confirmed photo score appears in the event log and is reversible like any manual entry.
@@ -231,7 +244,7 @@ The most ambitious recognition stage: whole-board interpretation feeding the ful
 
 **Dependencies:** Stage 7 (recognition + review pattern), Stage 4 (final/farmer engine), Stage 5 (expansion coverage).
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - For a clearly photographed finished base-game board, the app produces a complete final tally, including correct farmer scoring.
 - The full computed result is shown per-player and per-category and can be corrected before finalising.
 - No computed final result becomes official without explicit human confirmation.
@@ -256,7 +269,7 @@ The final maturity step, layered on the recognised/known board state.
 
 **Dependencies:** Stage 1 (catalog/board state), Stage 8 (recognised full-board state), Stage 5 (expansion rules).
 
-**Acceptance criteria:**
+**Validation / acceptance.**
 - The validation engine correctly flags canonical illegal configurations and passes legal ones, verified by automated tests.
 - Each flag identifies what is wrong and where in terms a player can act on.
 - Validation never modifies the score or the board on its own — it only reports.
@@ -274,6 +287,6 @@ The final maturity step, layered on the recognised/known board state.
 
 ---
 
-## Next Step
+## Maintenance
 
-Review this roadmap. When you're satisfied, start a **new chat session** and run `/speckit.aide.create-progress` to create the progress tracking file from this roadmap and the vision.
+Started stages (anything but 📋 in [`progress.md`](./progress.md)) are frozen — see `.aide/conventions/1-format-contract/roadmap.md`. New or changed scope enters as a new stage appended after the last, via `/aide-create-roadmap`; an unclaimed acceptance criterion is reworded only with `python .aide/scripts/aide.py progress reword`.

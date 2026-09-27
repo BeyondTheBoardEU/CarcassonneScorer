@@ -52,6 +52,10 @@ A **builder/factory** for authoring states in tests, e.g. `createBoard()` → fl
 
 > Maps to Stage 1 deliverable "Board-state model: representation of placed tiles, positions/orientations, and meeple placements, independent of how the state was produced."
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/002/`.
+
 ## Implementation steps
 
 1. Add a `board` module under `packages/core/src/board/` with the types above (or a single `board-state.ts`; keep it cohesive).

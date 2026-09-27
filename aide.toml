@@ -1,0 +1,64 @@
+# aide.toml — AIDE project config. Owned by THIS project, not the framework.
+# `install.py --update` never overwrites this file; edit it freely.
+
+[project]
+name = "carcassonne-scorer"
+source_dir = "packages"
+tests_dir = "packages"
+docs_dir = "docs/aide"
+
+[python]
+test_command = "npm test"
+# The Python `env --bootstrap` builds the venv from — a command on PATH
+# ("python3.12", "py -3.12") or an absolute path. Unset, it is whatever Python
+# launched the CLI. Set it when the dependency closure resolves on a narrower
+# range than `requires-python` declares; `aide env` reports a venv built from
+# a different version as stale.
+# interpreter = "python3.12"
+
+[git]
+mode = "local"
+main_branch = "main"
+branch_prefix = "aide/"
+
+[loop]
+queue_cap = 10
+# The most build<->validate rounds one item may take before the item loop
+# stops and asks. Escalation and the earlier stop are the orchestrator's
+# judgement; this is only the ceiling.
+validation_rounds = 5
+# Queue-execution scoped: how spec-author resolves an ambiguous queued item
+# (.aide/conventions.md §5). Not a global posture — root documents (vision,
+# roadmap) are authored interactively whatever this says.
+clarify = "assume"
+# Whether the item loop reads the diff adversarially as well as against the
+# spec (.aide/conventions.md §9). "off" runs the validator alone; "background"
+# also dispatches a reviewer concurrently with it, and the merge waits for
+# both. Off by default: a review round costs tokens on every item, and a
+# project with CI and hosted reviewers may reasonably decline it.
+review = "off"
+
+[framework]
+# Where the AIDE framework itself lives (owner/repo). The feedback loop's
+# triage step hands `framework`-typed insights over as GitHub issues on this
+# repo (via `gh`); empty disables the handover (entries stay pending in
+# docs/aide/insights.md).
+repo = ""
+# A local clone of the framework repo, for the documented framework-update
+# workflow, is declared per-machine via `local_path` under `[framework]` in
+# the PERSONAL .aide/local.toml (copy .aide/local.toml.example) — never here.
+# A machine-specific filesystem path has no business in this shared,
+# committed file.
+
+# [validation]
+# Named environment profiles for stage-validation items — each value is a
+# Python expression, true iff this machine provides the capability. Checked
+# deterministically via `python .aide/scripts/aide.py env --profile <name>`.
+# gpu = "__import__('torch').cuda.is_available()"
+# dataset = "__import__('pathlib').Path('data/reference').is_dir()"
+
+[aide]
+# Framework version at install time (from aide-loop core/VERSION). Informational —
+# the live installed engine version is the copied-in .aide/VERSION.
+version = "2.9.0"
+adapter = "claude"

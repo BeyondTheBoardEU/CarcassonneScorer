@@ -1,0 +1,71 @@
+---
+name: aide-create-roadmap
+description: Generate a staged development roadmap from the vision document.
+---
+
+# Create Roadmap
+
+Generate a staged development roadmap — Step 2 of the AIDE loop. The roadmap
+breaks the vision into incremental, demonstrable, locally-deployable stages.
+
+## Prerequisites
+
+- `docs/aide/vision.md` must exist (created by `/aide-create-vision`)
+
+## Instructions
+
+Read `docs/aide/vision.md`. If `docs/aide/roadmap.md` already exists, **update it
+incrementally** — do not regenerate from scratch. If it does not exist, create it
+from the template **`.aide/templates/roadmap.md`**.
+
+### Asking posture
+
+Roadmap authoring is **interactive regardless of `loop.clarify`** — that
+setting governs `spec-author` on queued items, nothing else
+(`.aide/conventions.md` §5). The staging derives from the written vision; where
+the vision leaves a sequencing decision open — what to build first, where a
+phase boundary falls, which objective a stage prioritises — ask the human
+rather than assuming, and present the result as a draft for review.
+
+### The vision's build posture
+
+Read the header blockquote's optional `**Posture:**` line before staging
+(`.aide/conventions.md` §1 → vision.md). **The posture says how much to build,
+and the roles that apply it are the three that author a document from the
+vision** — this one among them, and **a vision carrying no posture line is read
+as `prototype`**. Apply this role's row and nothing else in the table:
+
+- `prototype` — **fewer stages: a stage only where a success criterion needs
+  one**.
+- `durable` — **stages and sections as the vision earns them**.
+
+### Updating an existing roadmap
+
+Which stages may change, and how, is `.aide/conventions.md` §1 → roadmap.md —
+read it before editing. In practice:
+
+1. **Read `docs/aide/progress.md` first** to see which stages have started.
+2. **Edit only the stages §1 → roadmap.md leaves open**; for a criterion of a
+   started stage, run `python .aide/scripts/aide.py progress reword`, whose
+   flags are `progress -h`.
+3. **Add new stages** at the end to cover new or changed vision features.
+
+### Requirements
+
+1. **Staged delivery** — incremental stages that build on each other, numbered
+   from 0.
+2. **Each stage is demonstrable and testable** — a runnable deliverable plus
+   clear validation/acceptance criteria per stage. Acceptance bullets are
+   observable checks *of the built thing*; a measured outcome the work cannot
+   guarantee (an error-rate target, a benchmark result) is written as a
+   `Target:` bullet instead, which progress.md tracks in its Outcome targets
+   table (gating the objective, not the stage).
+3. **Objective → stage coverage table is mandatory** — every vision G-code maps
+   to at least one stage (progress mirrors this table).
+4. **Prescriptive detail** — most work is done by AI; be specific.
+5. **Realistic scope** — each stage deployable locally, roughly a week.
+
+### Output
+
+Save to `docs/aide/roadmap.md`. Roadmap changes are framework-level: reviewed PR,
+never a direct merge.

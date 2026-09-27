@@ -69,6 +69,10 @@ Exact names/layout may vary; serialization itself (stringify/parse + validate) i
 
 > Maps to the Stage 2 deliverable "score model behind setup/scoreboard/log" and is the engine for the acceptance criterion "No scoring arithmetic in the UI — totals come from the core." It does not by itself satisfy a user-facing Stage 2 acceptance criterion (those need the UI items).
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/012/`.
+
 ## Implementation steps
 
 1. Read `packages/core/src/board/{types,errors,builder}.ts` to mirror the Item 002 conventions (`version` constant, `*Error` with discriminated `kind`, immutable construction, no `Date` in stored shape).

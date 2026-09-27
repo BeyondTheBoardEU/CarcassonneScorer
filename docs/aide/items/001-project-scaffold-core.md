@@ -56,6 +56,10 @@ Carcassonne_scorer/
 
 > Maps to Stage 1 acceptance: "Core module has zero UI/platform dependencies and runs in isolation."
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/001/`.
+
 ## Implementation steps
 
 1. Initialize the workspace root `package.json` with `"workspaces": ["packages/*"]` and scripts: `test` (vitest run), `build` (tsc build), `lint` (eslint), `format` (prettier).

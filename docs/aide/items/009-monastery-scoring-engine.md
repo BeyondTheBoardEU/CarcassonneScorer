@@ -57,6 +57,10 @@ Exact file layout may vary — e.g. add `packages/core/src/scoring/monastery.ts`
 
 > Maps to the Stage 1 deliverable "Scoring engine (base game, incremental): scores completed cities, roads, and monasteries, including majority/tie meeple ownership" (this completes it) and the engine-assembly goal. With this item the Stage 1 acceptance criteria **"Engine returns correct scores for completed cities, roads, and monasteries …"** and **"Contested features award points by official majority/tie rules"** are satisfied (Item 010 then hardens them with the comprehensive scenario suite). See Completion Reminder.
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/009/`.
+
 ## Implementation steps
 
 1. Read `packages/core/src/features/types.ts` (`Feature`), `packages/core/src/scoring/{ownership,feature-score}.ts` (Item 007/008 APIs + `FeatureScore`), and the Item 006 monastery-completion fixtures in `feature-extraction.test.ts`.

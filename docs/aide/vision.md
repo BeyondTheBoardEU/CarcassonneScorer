@@ -227,9 +227,9 @@ The project succeeds when all of the following are true:
 
 ---
 
-## Appendix A — Guiding Principles (verbatim intent)
+## Guiding principles
 
-These are the non-negotiable principles that govern every decision below the vision level:
+These are the non-negotiable principles that govern every decision below the vision level (the validator checks every implementation against them; §5.1 elaborates each, and adds the committed principle that scoring and board logic stay platform-independent):
 
 1. **The spec is the source of truth.**
 2. **A single tile catalog drives scoring, validation, and image recognition alike.**
@@ -243,6 +243,6 @@ These are the non-negotiable principles that govern every decision below the vis
 
 ---
 
-## Next Step
+## Maintenance
 
-Review this vision. When you're satisfied, start a **new chat session** and run `/speckit.aide.create-roadmap` to generate a staged development roadmap from this document.
+This is the root document: changes here cascade into every future queue, so they go through `/aide-create-vision` (interactive) and a reviewed change — see `.aide/README.md` → Merge policy.

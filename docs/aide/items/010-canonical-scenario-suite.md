@@ -55,6 +55,10 @@ The suite MUST include at least these named scenarios, each asserting exact `poi
 
 > Maps to the Stage 1 deliverable "Comprehensive unit tests for canonical base-game scenarios …" and is the proof artefact for the Stage 1 scoring acceptance criteria. **This item completes Stage 1.**
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/010/`.
+
 ## Implementation steps
 
 1. Read `packages/core/src/index.ts` (public engine API: `scoreBoard`, `BoardScore`, `FeatureScore`), and the existing `feature-extraction.test.ts` / `engine.test.ts` for proven closed-feature fixtures and helper patterns.

@@ -54,6 +54,10 @@ Exact names/layout may vary — e.g. `packages/core/src/colours/{data,index}.ts`
 
 > Maps to the Stage 2 deliverable "meeple-colour selection" and the accessibility NFR (colour not conveyed by hue alone). User-facing acceptance ("assign distinct meeple colours") is satisfied when the setup UI (Item 015) uses this set.
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/013/`.
+
 ## Implementation steps
 
 1. Read `packages/core/src/catalog/{loader,index}.ts` for the `getTile`/`has` accessor convention and `packages/core/src/index.ts` export style.

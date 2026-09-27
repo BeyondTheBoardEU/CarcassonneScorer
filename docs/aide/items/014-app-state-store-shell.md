@@ -66,6 +66,10 @@ function GameProvider(props: { initialSession?: GameSession | null; children: Re
 
 > Maps to the Stage 2 deliverable "thin UI over core, single source of game state." It begins satisfying "No scoring arithmetic in the UI — totals come from the core" (fully demonstrated once the scoreboard/entry land, Items 016/017). No user-facing acceptance criterion is fully ticked by this item alone.
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/014/`.
+
 ## Implementation steps
 
 1. Read `packages/web/src/App.tsx` and `packages/web/test/App.test.tsx` for conventions; review `@carcassonne/core` exports `createSession`, `addScoreEvent`, `computeTotals`, `Player`, `GameSession`, `SessionError`.

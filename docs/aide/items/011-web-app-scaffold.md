@@ -45,6 +45,10 @@ This is the foundation every other Stage 2 UI item (013–020) builds on. The ha
 
 > Maps to the Stage 2 deliverable "Thin UI layer over the Stage 1 core" (the scaffold half) and is the precursor for every other Stage 2 item. It does not by itself satisfy a Stage 2 *acceptance criterion* (those require setup/scoreboard/entry/log/persistence).
 
+## Assumptions
+
+- None recorded. Specified and delivered before the aide-loop migration (2026-09-27); decisions taken during implementation are under Decisions & Trade-offs below and in the legacy run record `../runs/011/`.
+
 ## Implementation steps
 
 1. Read the root config (`package.json`, `tsconfig.base.json`, `vitest.config.ts`, `eslint.config.js`) and `packages/core/{package.json,tsconfig.json}` to mirror conventions.

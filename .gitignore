@@ -2,6 +2,20 @@ node_modules/
 dist/
 coverage/
 *.tsbuildinfo
+__pycache__/
 .env
 .env.*
 !.env.example
+
+# Personal, machine-local Claude Code settings (never commit)
+.claude/settings.local.json
+
+# --- AIDE framework (managed by aide-loop install.py) ---
+.aide/**/__pycache__/
+.aide/local.toml
+.aide-merge
+docs/aide/status/
+docs/aide/permissions/*.jsonl
+docs/aide/instructions/*.jsonl
+.claude/worktrees/
+# --- end AIDE ---
