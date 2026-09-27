@@ -118,9 +118,7 @@
       "Edit(.claude/agents/**)",
       "Write(.claude/agents/**)"
     ],
-    "deny": [
-      "Bash(git push:*)"
-    ]
+    "deny": []
   },
   "hooks": {
     "PreToolUse": [

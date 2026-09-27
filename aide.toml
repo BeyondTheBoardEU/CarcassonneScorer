@@ -17,7 +17,7 @@ test_command = "npm test"
 # interpreter = "python3.12"
 
 [git]
-mode = "local"
+mode = "auto-merge"
 main_branch = "main"
 branch_prefix = "aide/"
 

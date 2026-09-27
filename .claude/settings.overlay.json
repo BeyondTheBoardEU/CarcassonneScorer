@@ -6,7 +6,7 @@
     "",
     "Project additions: the npm/npx toolchain this TypeScript monorepo is built and",
     "tested with (aide.toml test_command = npm test), so unattended runs never stall",
-    "on a prompt. git.mode = local: nothing is ever pushed, so push stays denied."
+    "on a prompt. git.mode = auto-merge: pushes are allowed (force-push stays ask-gated)."
   ],
   "permissions": {
     "allow": {
@@ -21,11 +21,6 @@
         "Bash(npx vitest:*)",
         "Bash(npx eslint:*)",
         "Bash(npx prettier:*)"
-      ]
-    },
-    "deny": {
-      "add": [
-        "Bash(git push:*)"
       ]
     }
   }

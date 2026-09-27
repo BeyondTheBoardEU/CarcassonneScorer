@@ -10,6 +10,6 @@ Scorekeeper companion for the physical board game Carcassonne. Scope and princip
 
 ## Process
 
-Work is driven by the AIDE loop (aide-loop): `/aide-run-item`, `/aide-run-queue`, `/aide-run-roadmap`. `git.mode = "local"` — no remote, never push. `docs/aide/runs/` is a legacy archive from the pre-aide-loop pipeline.
+Work is driven by the AIDE loop (aide-loop): `/aide-run-item`, `/aide-run-queue`, `/aide-run-roadmap`. `git.mode = "auto-merge"` — remote `origin` (GitHub, `BeyondTheBoardEU/CarcassonneScorer`); claim branches are pushed and `aide merge` lands validated items on `main` and pushes. Never force-push. `docs/aide/runs/` is a legacy archive from the pre-aide-loop pipeline.
 
 @.aide/AGENT-CONTEXT.md
