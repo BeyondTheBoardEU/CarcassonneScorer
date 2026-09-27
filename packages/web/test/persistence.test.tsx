@@ -15,7 +15,10 @@ import {
   SESSION_VERSION,
 } from "@carcassonne/core";
 import type { GameSession, Player } from "@carcassonne/core";
-import { createLocalSessionStorage, DEFAULT_SESSION_STORAGE_KEY } from "../src/persistence/index.js";
+import {
+  createLocalSessionStorage,
+  DEFAULT_SESSION_STORAGE_KEY,
+} from "../src/persistence/index.js";
 import { App } from "../src/App.js";
 
 // ---------------------------------------------------------------------------
@@ -23,17 +26,6 @@ import { App } from "../src/App.js";
 // ---------------------------------------------------------------------------
 
 const TEST_KEY = "test.carcassonne.session";
-
-// Real meeple colour ids (Item 013): red, blue, green, yellow, black, gray
-const COLOUR_IDS = ["red", "blue", "green", "yellow", "black", "gray"] as const;
-
-function makePlayers(count: number): Player[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `p${i}`,
-    name: `Player ${i}`,
-    colourId: COLOUR_IDS[i] ?? `colour-${i}`,
-  }));
-}
 
 function buildTestSession(): GameSession {
   // Uses real colour ids (red, blue) so any rendering that calls
