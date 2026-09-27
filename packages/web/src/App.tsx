@@ -5,6 +5,16 @@ import { SetupView } from "./setup/index.js";
 import { Scoreboard } from "./scoreboard/index.js";
 import { ScoreEntry } from "./score-entry/index.js";
 import { EventLog } from "./event-log/index.js";
+import { createLocalSessionStorage } from "./persistence/index.js";
+import type { SessionStorage } from "./persistence/index.js";
+
+/**
+ * Default storage (Item 019): the real `localStorage`-backed
+ * implementation, shared by `App`'s startup hydrate and the `GameProvider`
+ * it constructs, so both sides of persistence agree on the same backend.
+ * Tests supply their own `storage` prop instead of touching this default.
+ */
+const defaultStorage = createLocalSessionStorage();
 
 /**
  * The in-game (play) view: the always-visible scoreboard (Item 016), manual
@@ -49,8 +59,20 @@ function GameShell(): JSX.Element {
 }
 
 export interface AppProps {
-  /** Hydrate seam for tests/persistence (Item 019): see `GameProvider`. */
+  /**
+   * Hydrate seam for tests (Item 014/019): when supplied, overrides the
+   * startup hydrate read from `storage` below. Defaults to undefined, in
+   * which case `App` reads `storage.load()` itself (the real Item 019
+   * restore path).
+   */
   initialSession?: GameSession | null;
+  /**
+   * Persistence backend (Item 019). Defaults to the real
+   * `localStorage`-backed `SessionStorage`. Tests inject a fake (or a
+   * pre-seeded real one backed by jsdom's `localStorage`) to drive the
+   * restore flow without depending on a literal `initialSession`.
+   */
+  storage?: SessionStorage;
 }
 
 /**
@@ -62,11 +84,18 @@ export interface AppProps {
  * with the real game setup form (`SetupView`); Item 016 replaces the play
  * view's scoreboard placeholder with the real `Scoreboard`; Item 017 adds
  * the real `ScoreEntry`, retiring the last Item 014 scratch placeholder.
- * Item 018 adds the read-only `EventLog`.
+ * Item 018 adds the read-only `EventLog`. Item 019 adds local persistence:
+ * `App` reads `storage.load()` once for the startup hydrate (unless a
+ * literal `initialSession` override is supplied) and passes the same
+ * `storage` into `GameProvider`, which saves on every session change and
+ * clears on `newGame` — the only place persistence touches the store.
  */
 export function App(props: AppProps = {}): JSX.Element {
+  const storage = props.storage ?? defaultStorage;
+  const initialSession = props.initialSession !== undefined ? props.initialSession : storage.load();
+
   return (
-    <GameProvider initialSession={props.initialSession ?? null}>
+    <GameProvider initialSession={initialSession} storage={storage}>
       <main>
         <h1>Carcassonne Scorer</h1>
         <p data-testid="core-status">

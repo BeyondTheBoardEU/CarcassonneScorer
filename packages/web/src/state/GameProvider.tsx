@@ -1,10 +1,19 @@
-import { useCallback, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer } from "react";
 import type { ReactNode } from "react";
 import { addScoreEvent, computeTotals, createSession } from "@carcassonne/core";
 import type { GameSession, Player } from "@carcassonne/core";
+import { createLocalSessionStorage } from "../persistence/index.js";
+import type { SessionStorage } from "../persistence/index.js";
 import { GameContext } from "./context.js";
 import { createInitialState, gameReducer } from "./reducer.js";
 import type { GameApi } from "./types.js";
+
+/**
+ * Default storage (Item 019): the real `localStorage`-backed implementation
+ * under the fixed key. Tests inject a fake via the `storage` prop instead
+ * of touching this default.
+ */
+const defaultStorage = createLocalSessionStorage();
 
 /** Generates a reasonably unique event id at the store's impure boundary. */
 function generateEventId(): string {
@@ -16,11 +25,21 @@ function generateEventId(): string {
 
 export interface GameProviderProps {
   /**
-   * Hydrate seam (Item 019 + tests): when supplied, the provider starts
-   * already in-game with this session instead of the default "no game"
-   * state. Defaults to `null` (setup view).
+   * Hydrate seam (Item 014 + Item 019 + tests): when supplied, the provider
+   * starts already in-game with this session instead of the default
+   * "no game" state. Defaults to `null` (setup view). Item 019 wires this
+   * from `storage.load()` at the `App` root so a saved session is restored
+   * on startup; tests pass a literal `GameSession` directly.
    */
   initialSession?: GameSession | null;
+  /**
+   * Persistence backend (Item 019). Defaults to the real
+   * `localStorage`-backed `SessionStorage`; tests inject a fake to assert
+   * save/clear behaviour without touching real browser storage. This is the
+   * single place the store touches persistence — `save` on every session
+   * change, `clear` on `newGame`.
+   */
+  storage?: SessionStorage;
   children: ReactNode;
 }
 
@@ -30,8 +49,20 @@ export interface GameProviderProps {
  * app shell in this once; descendants read it with `useGame()`.
  */
 export function GameProvider(props: GameProviderProps): JSX.Element {
-  const { initialSession = null, children } = props;
+  const { initialSession = null, storage = defaultStorage, children } = props;
   const [state, dispatch] = useReducer(gameReducer, createInitialState(initialSession));
+
+  // Persist on change (Item 019): save whenever a session exists, clear
+  // when it becomes null (newGame). Runs after every render where
+  // `state.session` changed — including the initial render, which is a
+  // harmless no-op re-save when hydrated from storage.load().
+  useEffect(() => {
+    if (state.session) {
+      storage.save(state.session);
+    } else {
+      storage.clear();
+    }
+  }, [state.session, storage]);
 
   const totals = useMemo<Record<string, number>>(
     () => (state.session ? computeTotals(state.session) : {}),
