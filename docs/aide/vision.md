@@ -1,11 +1,14 @@
-# Carcassonne Scorer — Vision
+<!-- aide-template: vision 2 -->
+# Carcassonne Scorer — Project Vision
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-14
-> **Document role:** Step 1 of the AIDE workflow. This is the source of truth for scope. Roadmap, progress, queue, and work items all derive from it. Changes to scope happen here first (via the feedback loop), then propagate.
+> **Status:** Active · **Created:** 2026-06-14 · **Last updated:** 2026-09-27 (prototype-posture review)
+> **Posture:** prototype
+> Step 1 of the AIDE loop · the root document: [`roadmap.md`](roadmap.md),
+> [`progress.md`](progress.md), every queue and every work item derive from this.
 
 ---
 
-## 1. Project Overview
+## 1. Overview
 
 **Carcassonne Scorer** takes the bookkeeping out of scoring the physical board game *Carcassonne* so players can focus on playing.
 
@@ -13,7 +16,7 @@ Carcassonne is a tile-laying game in which players build a shared landscape of c
 
 This product is **not** a digital version of the game. The game is still played on a physical table with real tiles and meeples. Carcassonne Scorer is the *scorekeeper* that sits alongside the physical game: it removes the arithmetic, the rules lookups, and the manual tallying, and — as it matures — it can look at the physical board through a camera and compute the score directly.
 
-The product is designed to grow along a clear maturity curve:
+The product grows along a clear maturity curve:
 
 1. **A fast, reliable digital scorepad** — replace pen and paper for tracking scores during play.
 2. **A photo-based feature scorer** — point the camera at a completed structure (or a region you select) mid-game and get its score.
@@ -24,11 +27,22 @@ Throughout, a single principle holds: **automation assists, humans decide.** Any
 
 ---
 
-## 2. Goals & Objectives
+## 2. Guiding principles
 
-The following are the measurable outcomes that define whether the product is working.
+The non-negotiable principles every decision below the vision level is checked against:
 
-| # | Objective | Measure of success |
+1. **The spec is the source of truth.** Behaviour is defined in an item spec before it is implemented, and code conforms to the spec — not the other way round.
+2. **A single tile catalog drives scoring, validation, and image recognition alike.** There is exactly one definition of what a tile is and how it behaves; no component may keep its own copy or diverge from it.
+3. **The running score is never lost and works offline.** Every change to game state is persisted locally, and no scoring path may require a network connection.
+4. **Any automatically computed result is always shown for human review and correction — never treated as silently authoritative.** Computed results stay *proposed* until a human confirms them; nothing automated reaches the committed score on its own.
+5. **Unsupported pieces fail loudly and degrade gracefully to manual entry.** Recognition and scoring must be able to say "I don't know" and hand off to manual entry rather than guess.
+6. **Scoring and board logic are platform-independent.** Catalog, board, scoring, validation and session logic live in the core with no UI or platform dependency; the UI is thin over it and holds no scoring or tally arithmetic.
+
+---
+
+## 3. Goals & objectives
+
+| # | Objective | Measurable outcome |
 |---|-----------|--------------------|
 | G1 | Eliminate manual tallying | A group can finish a game and trust the final scoreboard without anyone adding up points by hand. |
 | G2 | Fast, correct scoring from a photo | At any point during play, point a camera at the board and receive a correct, reviewable score in seconds. |
@@ -41,169 +55,118 @@ The following are the measurable outcomes that define whether the product is wor
 
 ---
 
-## 3. Target Users
+## 4. Target users
 
-The core audience is **people playing physical Carcassonne at a table.** The product must serve the full range of that audience:
+The core audience is **people playing physical Carcassonne at a table**, across the full range of that audience:
 
 - **Casual base-game players** — two friends or a family playing the base game. They need a frictionless scorepad and nothing more in their way.
-- **Enthusiast / expansion-heavy groups** — up to **six players**, multiple expansions in play, contested features, and complex end-game farmer scoring. This is the group that suffers most from manual scoring and gains the most from automation.
+- **Enthusiast / expansion-heavy groups** — up to **six players**, multiple expansions in play, contested features, and complex end-game farmer scoring. This group suffers most from manual scoring and gains the most from automation.
 - **Mixed groups mid-spectrum** — base game plus one or two popular expansions.
 
-Common characteristics across all users:
+Common characteristics:
 
 - They are physically together at a table; the app is a companion, not the play surface.
-- At least one player operates the app (the "scorekeeper"), though the design should not prevent others from glancing at or interacting with it.
+- At least one player operates the app (the "scorekeeper"), though others may glance at or interact with it.
 - They want the score to be *correct* and *settled* — reducing disputes is a real value, not a nicety.
 - They may have intermittent or no internet at the table (kitchen tables, game cafés, trains, holidays). **Offline operation is a requirement, not a bonus.**
 
-**Out-of-audience (for now):** remote/online players who want to play the game itself digitally, and tournament organisers needing officiated rules enforcement. See [Out of Scope](#8-out-of-scope).
+**Out-of-audience (for now):** remote/online players who want to play the game itself digitally, and tournament organisers needing officiated rules enforcement. See [Out of scope](#8-out-of-scope).
 
 ---
 
-## 4. Core Features
+## 5. Core features
 
-Features are grouped by the maturity curve in the overview. Earlier groups are foundational; later groups build on them.
+Grouped by the maturity curve; earlier groups are foundational.
 
-### 4.1 Manual Digital Scorepad (foundation)
+### 5.1 Manual digital scorepad (foundation)
 
 - **Game setup:** choose player count (2–6), assign each player a name and a meeple colour from the set of standard colours.
 - **Manual score entry:** add or adjust points for any player at any time, with a clear log of scoring events so a mistake can be traced and corrected.
 - **Running scoreboard:** always-visible current totals per player.
-- **Persistent, offline-first state:** the running score is never lost. It persists locally across reloads and app restarts and works with no network connection.
-- **Review & correction:** every score change is reviewable and reversible; nothing is hidden or final until the game ends.
-- **End-game tally support:** assist the final scoring step (the part players most dislike), including farmer/field scoring, even when entered manually.
+- **Persistent, offline-first state:** the running score persists locally across reloads and app restarts and works with no network connection.
+- **Review & correction:** every score change is reviewable and reversible; nothing is final until the game ends.
+- **End-game tally support:** assist the final scoring step, including farmer/field scoring, even when entered manually.
 
-### 4.2 Photo-Based Feature Scoring (mid-game)
+### 5.2 Photo-based feature scoring (mid-game)
 
 - **Score a completed structure from a photo:** photograph a finished city, road, or monastery and have its score computed.
-- **Score a user-selected region:** let the user indicate a region of the board (e.g. draw or tap to select) and score just that region, for cases where automatic feature detection is ambiguous or the user wants control.
-- **Reviewable result:** the computed score, the recognised feature, and which meeples/players it credits are all shown for confirmation before being applied to the scoreboard.
-- **Clear failure:** if the photo cannot be interpreted, the app states this plainly and offers manual entry for that feature.
+- **Score a user-selected region:** indicate a region of the board (draw or tap to select) and score just that region, for cases where automatic feature detection is ambiguous or the user wants control.
+- **Reviewable result:** the computed score, the recognised feature, and which meeples/players it credits are shown for confirmation before being applied.
+- **Clear failure:** if the photo cannot be interpreted, the app says so plainly and offers manual entry for that feature.
 
-### 4.3 Photo-Based Final Scoring (end of game)
+### 5.3 Photo-based final scoring (end of game)
 
-- **Full-board final score from a photo:** photograph the finished board and compute the complete end-of-game tally automatically, including incomplete cities/roads, monasteries, and **farmer/field scoring** across the whole board.
+- **Full-board final score from a photo:** photograph the finished board and compute the complete end-of-game tally, including incomplete cities/roads, monasteries, and **farmer/field scoring**.
 - **Per-player breakdown:** show how the final total is composed so players can verify it.
-- **Always reviewable:** the entire computed final score is presented for human review and correction before it becomes the official result.
+- **Always reviewable:** the entire computed final score is presented for human review and correction before it becomes official.
 
-### 4.4 Board Validation
+### 5.4 Board validation
 
-- **Illegal configuration detection:** check the board (from a photo or recognised state) for illegal tile placements and configurations and flag them.
-- **Clear reporting:** explain *what* appears wrong and *where*, so players can decide whether it is a genuine rules violation or a recognition error.
+- **Illegal configuration detection:** check the board (from a photo or known state) for illegal tile placements and configurations and flag them.
+- **Clear reporting:** explain *what* appears wrong and *where*, so players can decide whether it is a genuine violation or a recognition error.
 
-### 4.5 Coverage & Catalog
+### 5.5 Coverage & catalog
 
 - **Player counts:** all common counts up to six players.
 - **Meeple colours:** all standard meeple colours.
 - **Expansions:** the major/common expansions, with their scoring and placement rules.
-- **Single tile catalog:** one authoritative catalog of tiles and pieces drives **scoring, validation, and image recognition** alike — they are never allowed to diverge. (See [Technical Architecture](#5-technical-architecture).)
+- **Single tile catalog:** one authoritative catalog of tiles and pieces drives scoring, validation, and image recognition alike (principle 2).
 
-### 4.6 Trust & Failure Behaviour (cross-cutting)
+### 5.6 Trust & failure behaviour (cross-cutting)
 
 - **Human-in-the-loop by default:** any automatically computed result is shown for review and correction and is never silently authoritative.
 - **Fail loudly, degrade gracefully:** unsupported pieces or unrecognised layouts produce a clear message and a manual-entry fallback — never a silent guess.
 
 ---
 
-## 5. Technical Architecture
+## 6. Technical architecture
 
-> **Note on commitment level:** This section records *strategic direction and architectural principles*, not a locked technology stack. Specific library and framework choices are deferred to the roadmap and plan stages. What is committed here is the *shape* of the system and the principles it must honour.
+The decisions made so far; anything not listed is decided in the item spec that first needs it.
 
-### 5.1 Architectural Principles (committed)
-
-1. **The spec is the source of truth.** Behaviour is defined in specification before implementation; code conforms to spec.
-2. **A single tile catalog drives everything.** One catalog of tiles and pieces is the shared input to the scoring engine, the validation engine, and the image-recognition layer. There is exactly one definition of what a tile is and how it behaves.
-3. **The running score is never lost and works offline.** Persistence and offline operation are first-class architectural constraints, not features bolted on later.
-4. **Automation is always reviewable.** The architecture must keep computed results in a "proposed" state until a human confirms them; there is a clear boundary between *computed* and *committed* score.
-5. **Unsupported input fails loudly and degrades to manual entry.** The recognition and scoring layers must be able to report "I don't know" and hand off to manual entry.
-6. **Scoring and board logic are platform-independent.** The core scoring, validation, and catalog logic is kept free of UI and platform dependencies so it can be reused unchanged across web and native targets.
-
-### 5.2 Strategic Delivery Direction
-
-- **Ship as an installable web app first.** The initial deliverable is a web application that can be installed (PWA-style) and works offline, reaching the broadest set of devices at the lowest friction.
-- **Native mobile apps later.** Native apps follow, primarily to enable robust **offline, on-device** scoring and camera/recognition performance.
-- **Reuse the core everywhere.** Because scoring and board logic are platform-independent (principle 6), they are written once and reused across the web app and the later native apps.
-
-### 5.3 Logical Components
-
-| Component | Responsibility |
-|-----------|----------------|
-| **Tile catalog** | Single authoritative definition of tiles, pieces, and expansions. Consumed by all other components. |
-| **Scoring engine** | Computes scores (incremental and final, including farmers) from board state. Platform-independent. |
-| **Validation engine** | Detects illegal placements/configurations from board state. Platform-independent. |
-| **Recognition layer** | Turns a photo (full board or selected region) into board state, or reports that it cannot. |
-| **Score state & persistence** | Holds the running score and game state; guarantees durability and offline availability; separates *proposed* from *committed* results. |
-| **UI / presentation** | Setup, manual entry, scoreboard, photo capture, region selection, and the review-and-correct flows. Platform-specific; thin over the core. |
-
-### 5.4 Data Flow (high level)
-
-```
-Physical board ──(camera)──▶ Recognition layer ──▶ Board state
-                                                      │
-                            Tile catalog ────────────┤
-                                                      ▼
-                                   Scoring engine ─▶ Proposed score ─▶ Human review ─▶ Committed score
-                                   Validation engine ─▶ Flagged issues ─▶ Human review
-```
-
-Manual entry feeds **Board state / Committed score** directly, bypassing the recognition layer, and is always available as a fallback.
+- **Language & layout:** TypeScript in an npm-workspaces monorepo.
+- **`packages/core`:** tile catalog (typed data), board-state model, scoring engine, session/score model — pure and DOM-free (principle 6).
+- **`packages/web`:** React 18 + Vite web app, thin over the core; shipped as an installable, offline-capable web app first (PWA in Stage 3).
+- **Persistence:** game state is stored locally on the device; there is no backend.
+- **Tests:** Vitest — core on `node`, web on `jsdom` with Testing Library. The gate is `npm run lint`, `npm run build`, `npm test`.
 
 ---
 
-## 6. Non-Functional Requirements
+## 7. Constraints & assumptions
 
-| Area | Requirement |
-|------|-------------|
-| **Reliability / durability** | The running score must survive reloads, crashes, device sleep, and network loss. No game's score is ever lost. |
-| **Offline** | Full scorepad functionality must work with no network connection. On-device recognition is a goal for the native phase. |
-| **Performance** | Manual interactions feel instant. Photo-based scoring returns a reviewable result "in seconds." |
-| **Correctness** | Scoring must implement the official rules correctly for supported player counts and expansions; correctness outranks coverage. |
-| **Trust / transparency** | Computed results are explainable enough to be verified (per-player and per-feature breakdowns). Nothing is silently authoritative. |
-| **Graceful degradation** | Recognition or scoring uncertainty is surfaced clearly and always has a manual fallback. |
-| **Usability** | Usable at a table by one scorekeeper without a manual; setup is quick; the scoreboard is readable at a glance. |
-| **Accessibility** | Readable typography, sufficient contrast, and colour choices that remain distinguishable for colour-blind users (meeple-colour selection must not rely on colour alone). |
-| **Portability** | Core logic runs unchanged across web and native targets. |
-| **Privacy** | Photos of the board and game data stay on-device by default; no account or upload is required to score a game. |
-
----
-
-## 7. Constraints & Assumptions
-
-### 7.1 Constraints
+**Constraints**
 
 - **Companion, not the game.** The product never replaces the physical tiles/meeples; it scores a game played on a real table.
 - **Single catalog discipline.** Scoring, validation, and recognition must all be driven by the one tile catalog; divergence is prohibited.
 - **Human-in-the-loop discipline.** No automated result may be committed without a path for human review and correction.
 - **Offline-first.** Network must never be a prerequisite for scoring a game.
 - **Player count ceiling.** Up to six players; standard meeple colours.
-- **Spec-first process.** Implementation follows specification (AIDE workflow).
+- **Accessibility.** Meeple-colour choice never relies on colour alone (each colour carries a non-colour label/pattern), so colour-blind players can tell players apart.
+- **Privacy.** Photos of the board and game data stay on-device; no account or upload is required to score a game.
 
-### 7.2 Assumptions
+**Assumptions**
 
 - Players have a device with a camera (phone or tablet) at the table for the photo-based phases.
 - Lighting and board access are good enough for a usable photo in the recognition phases; where they are not, manual entry covers the gap.
-- "Major expansions" refers to the commonly played, widely owned expansions; the exact supported set is defined in the roadmap and the tile catalog, and unsupported pieces fail loudly.
-- The web platform's storage and offline capabilities are sufficient for durable, offline score persistence in the first phase.
+- "Major expansions" means the commonly played, widely owned expansions; the exact supported set is defined in the roadmap and the tile catalog, and unsupported pieces fail loudly.
+- The web platform's storage and offline capabilities are sufficient for durable, offline score persistence.
 - One person typically drives the app per game (the scorekeeper), though shared/glanceable use is welcome.
 
 ---
 
-## 8. Out of Scope
+## 8. Out of scope
 
-Explicitly excluded from this project, with reasons:
-
-- **Playing Carcassonne digitally.** This is a *scorer*, not a game implementation. There is no digital board, no AI opponents, no tile drawing/turn engine. *Reason:* the value is in removing bookkeeping from physical play, not replacing it.
-- **Online / remote multiplayer.** No networked play between players in different locations. *Reason:* the audience is people physically at one table.
-- **Accounts, cloud sync, and social features.** No mandatory login, no leaderboards, no cloud game history in the initial vision. *Reason:* offline-first and privacy; avoid friction and scope creep. (May be revisited later.)
-- **Officiated tournament rules enforcement.** The app assists and flags, but is not an authoritative referee that overrides players. *Reason:* automation assists, humans decide.
-- **Every niche expansion and fan variant.** Only the major expansions are targeted; obscure or fan-made content is out. *Reason:* correctness and catalog discipline over exhaustive coverage; unsupported pieces degrade to manual entry.
-- **Silent / fully-automatic scoring with no review step.** Never. *Reason:* a core guiding principle — computed results are always reviewable.
-- **Guessing when recognition is uncertain.** The app must not fabricate a result to appear smart. *Reason:* trust; fail loudly and fall back to manual.
-- **Locking to a specific tech stack in this document.** Concrete stack choices are deferred to roadmap/plan. *Reason:* the vision commits to direction and principles, not implementation.
+- **Playing Carcassonne digitally** — no digital board, AI opponents, or tile-drawing/turn engine. *Reason:* the value is in removing bookkeeping from physical play, not replacing it.
+- **Online / remote multiplayer** — no networked play between players in different locations. *Reason:* the audience is people physically at one table.
+- **Accounts, cloud sync, and social features** — no login, leaderboards, or cloud game history. *Reason:* offline-first and privacy; avoid friction and scope creep.
+- **Native mobile apps (for now)** — the product ships as an installable web app only. *Reason:* web first reaches the most devices at the lowest cost; revisit once the web maturity curve is complete. The platform-independent core (principle 6) keeps the option open.
+- **Officiated tournament rules enforcement** — the app assists and flags, but is not an authoritative referee that overrides players. *Reason:* automation assists, humans decide.
+- **Every niche expansion and fan variant** — only the major expansions are targeted. *Reason:* correctness and catalog discipline over exhaustive coverage; unsupported pieces degrade to manual entry.
+- **Silent / fully-automatic scoring with no review step** — never. *Reason:* computed results are always reviewable (principle 4).
+- **Guessing when recognition is uncertain** — the app must not fabricate a result to appear smart. *Reason:* trust; fail loudly and fall back to manual (principle 5).
 
 ---
 
-## 9. Success Criteria
+## 9. Success criteria
 
 The project succeeds when all of the following are true:
 
@@ -227,22 +190,6 @@ The project succeeds when all of the following are true:
 
 ---
 
-## Guiding principles
-
-These are the non-negotiable principles that govern every decision below the vision level (the validator checks every implementation against them; §5.1 elaborates each, and adds the committed principle that scoring and board logic stay platform-independent):
-
-1. **The spec is the source of truth.**
-2. **A single tile catalog drives scoring, validation, and image recognition alike.**
-3. **The running score is never lost and works offline.**
-4. **Any automatically computed result is always shown for human review and correction — never treated as silently authoritative.**
-5. **Unsupported pieces fail loudly and degrade gracefully to manual entry.**
-
-## Appendix B — Strategic Direction (verbatim intent)
-
-*Not a commitment to a tech stack.* Ship as an installable web app first; native mobile apps later for offline on-device scoring; keep the scoring and board logic platform-independent so it is reused everywhere.
-
----
-
 ## Maintenance
 
-This is the root document: changes here cascade into every future queue, so they go through `/aide-create-vision` (interactive) and a reviewed change — see `.aide/README.md` → Merge policy.
+This is the root document: changes cascade into every future queue, so they go through `/aide-create-vision` (interactive) and a reviewed change — see `.aide/README.md` → Merge policy.

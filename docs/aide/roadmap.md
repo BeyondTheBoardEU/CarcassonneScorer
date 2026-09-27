@@ -1,25 +1,21 @@
-# Carcassonne Scorer — Roadmap
+<!-- aide-template: roadmap 1 -->
+# Carcassonne Scorer — Development Roadmap
 
-> **Status:** Draft v1 · **Last updated:** 2026-06-14
-> **Document role:** Step 2 of the AIDE workflow. Derived from [`vision.md`](./vision.md). Breaks the vision into staged, demonstrable deliverables. Progress, queue, and work items derive from this document. Scope changes happen in the vision first, then propagate here.
-
----
-
-## How to read this roadmap
-
-Each **stage** delivers a demonstrable, testable version of the product that builds on the stages before it. Stages are scoped to be deployable locally and deliverable in roughly a week. Within a stage:
-
-- **Goal** — the one-sentence outcome the stage exists to achieve.
-- **Deliverables** — the specific, concrete things built.
-- **Dependencies** — which earlier stages must be complete first.
-- **Validation / acceptance** — how we know the stage is done and demonstrable (mirrored as `progress.md` acceptance boxes).
-- **Vision trace** — which vision goals/features/principles the stage advances.
-
-The progression honours the vision's committed architectural principles from the start: a **single tile catalog** drives everything (Stage 1), the **core is platform-independent** (Stages 1, 4), the **running score is never lost and works offline** (Stages 2–3), **automation is always reviewable** (the proposed/committed boundary appears the moment recognition does, Stage 6), and **unsupported input fails loudly** (Stages 7–9).
+> **Status:** Active · **Created:** 2026-06-14 · **Last updated:** 2026-09-27 (prototype-posture review: recognition foundation folded into photo feature scoring; stages renumbered 1–8)
+> Step 2 of the AIDE loop · derived from [`vision.md`](vision.md) (posture: prototype) · its stages
+> are mirrored by [`progress.md`](progress.md) and scoped into the queues.
 
 ---
 
-## Stage map
+## Strategy
+
+Each **stage** delivers a demonstrable, testable version of the product that builds on the stages before it, deployable locally and sized for roughly a week. Under the vision's **prototype** posture a stage exists only where a success criterion needs one — no preparatory or "for later" stages.
+
+The sequence follows the vision's maturity curve: first a scorepad that fully replaces pen and paper (Stages 1–5: core, manual scorepad, offline durability and review, end-game tally, expansions), then photo-based scoring (Stages 6–7), then board validation (Stage 8). The vision's principles hold from the start: a **single tile catalog** drives everything (Stage 1), the **core is platform-independent** (Stages 1, 4, 5), the **running score is never lost and works offline** (Stages 2–3), **automation is always reviewable** (the proposed/committed boundary arrives with the first recognition, Stage 6), and **unsupported input fails loudly** (Stages 5–8).
+
+Each stage lists its **Goal**, **Deliverables**, **Dependencies**, **Validation / acceptance** (mirrored as `progress.md` acceptance boxes; a measured outcome is a `Target:` bullet instead), and a **Vision trace**.
+
+### Stage map
 
 | Stage | Title | Maturity phase | Outcome |
 |-------|-------|----------------|---------|
@@ -28,10 +24,9 @@ The progression honours the vision's committed architectural principles from the
 | 3 | Offline durability + review & correction | Scorepad | PWA installable & offline; score log is reviewable and reversible; no state ever lost. |
 | 4 | End-game tally assistant incl. farmers | Scorepad | Guided final scoring, including manual farmer/field scoring, with per-player breakdown. |
 | 5 | Expansion coverage (major expansions) | Scorepad | Catalog + scoring extended to the major expansions; coverage that scores correctly. |
-| 6 | Recognition foundation: capture, regions, proposed/committed boundary | Feature scoring | Photo capture + region selection feed a board-state model; proposed vs committed score is real. |
-| 7 | Photo-based feature scoring | Feature scoring | Photograph a completed structure or selected region, get a reviewable score, apply it. |
-| 8 | Photo-based final scoring | Final scoring | Photograph the finished board, get the complete reviewable end-game tally incl. farmers. |
-| 9 | Board validation | Validation | Detect and clearly report illegal placements/configurations for human judgement. |
+| 6 | Photo-based feature scoring | Feature scoring | Photograph a completed structure or selected region, review the proposed score, and commit or reject it. |
+| 7 | Photo-based final scoring | Final scoring | Photograph the finished board, get the complete reviewable end-game tally incl. farmers. |
+| 8 | Board validation | Validation | Detect and clearly report illegal placements/configurations for human judgement. |
 
 ### Objective → stage coverage
 
@@ -39,12 +34,20 @@ Derived from each stage's **Vision trace** line below.
 
 | Objective | Delivered by |
 |-----------|--------------|
-| G1 Eliminate manual tallying | Stages 2, 4, 8 |
-| G2 Fast, correct scoring from a photo | Stages 6, 7, 8 |
+| G1 Eliminate manual tallying | Stages 2, 4, 7 |
+| G2 Fast, correct scoring from a photo | Stages 6, 7 |
 | G3 Never lose the running score | Stages 2, 3 |
-| G4 Trustworthy automation | Stages 3, 4, 6, 7, 8, 9 |
-| G5 Graceful degradation | Stages 5, 6, 7, 8, 9 |
+| G4 Trustworthy automation | Stages 3, 4, 6, 7, 8 |
+| G5 Graceful degradation | Stages 5, 6, 7, 8 |
 | G6 Broad coverage | Stages 1, 2, 5 |
+
+### Stage dependency graph
+
+```
+1 ─► 2 ─► 3 ─► 4 ─► 5 ─► 6 ─► 7 ─► 8
+```
+
+(Stage 4 also needs Stage 1; Stages 6–8 also draw on Stages 4–5 — see each stage's Dependencies.)
 
 ---
 
@@ -70,7 +73,7 @@ This stage builds no UI. It establishes the architectural spine the entire produ
 - Contested features award points by the official majority/tie rules, verified by tests.
 - The base-game catalog passes its internal-consistency checks.
 
-**Vision trace:** G6, principles 1/2/6; features 4.1 (foundation), 4.5, 5.3 (catalog, scoring engine).
+**Vision trace:** G6; principles 1/2/6; features 5.1 (foundation), 5.5; architecture §6 (core).
 
 ---
 
@@ -97,15 +100,13 @@ This is the first demonstrable product: pen-and-paper replacement. It wraps the 
 - Reloading the page restores the exact in-progress game (players, totals, log).
 - No scoring arithmetic lives in the UI — totals come from the core.
 
-**Vision trace:** G1, G3 (first cut), G6 (player counts/colours), features 4.1, 5.3 (UI, persistence).
+**Vision trace:** G1, G3 (first cut), G6 (player counts/colours); feature 5.1; constraint "accessibility"; architecture §6 (web, persistence).
 
 ---
 
 ## Stage 3 — Offline durability + review & correction
 
 **Goal:** Make the scorepad installable and fully offline, and make every score change reviewable and reversible so nothing is final until the game ends.
-
-This stage hardens the durability and trust guarantees the vision treats as architectural, not optional.
 
 **Deliverables:**
 - **PWA installability:** the app can be installed (home-screen/standalone) and launches without a network.
@@ -122,15 +123,13 @@ This stage hardens the durability and trust guarantees the vision treats as arch
 - Any logged score event can be edited or reversed, and totals reconcile correctly afterward.
 - A finished game can be finalised and a new game started without losing the ability to review the prior one (at least until explicitly cleared).
 
-**Vision trace:** G3, G4 (review), principle 3, NFR reliability/offline, features 4.1, 4.6.
+**Vision trace:** G3, G4 (review); principle 3; feature 5.1; success criteria 3, 8.
 
 ---
 
 ## Stage 4 — End-game tally assistant including farmers
 
 **Goal:** Guide players through the end-of-game final scoring — the part they most dislike — including manual farmer/field scoring, with a verifiable per-player breakdown.
-
-Still fully manual, but this removes the hardest arithmetic and rules lookup of a base-game session.
 
 **Deliverables:**
 - **Final-scoring engine (base game):** core logic for end-game scoring of incomplete cities/roads, monasteries, and **farmer/field scoring** (fields scored by completed cities they border, with field-majority ownership), exercised by unit tests.
@@ -146,15 +145,13 @@ Still fully manual, but this removes the hardest arithmetic and rules lookup of 
 - The final total is shown broken down per player and per category.
 - The user can correct any end-game value before finalising.
 
-**Vision trace:** G1, G4, features 4.1 (end-game tally), 4.3 farmer logic (manual precursor), success phase "Scorepad".
+**Vision trace:** G1, G4; features 5.1 (end-game tally), 5.3 (farmer logic, manual precursor); success criterion 1; phase "Scorepad".
 
 ---
 
 ## Stage 5 — Expansion coverage (major expansions)
 
 **Goal:** Extend the catalog and scoring engine to the major/common expansions so coverage holds up under enthusiast play.
-
-This is where the single-catalog discipline pays off: expansions are added as catalog data plus scoring rules, reused by everything downstream.
 
 **Deliverables:**
 - **Defined supported set:** an explicit list of the major expansions targeted in this stage (recorded here and in the catalog), with anything outside it treated as unsupported.
@@ -173,67 +170,42 @@ This is where the single-catalog discipline pays off: expansions are added as ca
 - Enabling expansions at setup changes scoring behaviour accordingly.
 - An unsupported piece produces a clear "not supported" signal, never a silent guess.
 
-**Vision trace:** G5, G6, principle 2/5, features 4.5, 4.6.
+**Vision trace:** G5, G6; principles 2/5; features 5.5, 5.6; success criterion 6.
 
 ---
 
-## Stage 6 — Recognition foundation: capture, regions, proposed/committed boundary
+## Stage 6 — Photo-based feature scoring
 
-**Goal:** Introduce the camera and the proposed-vs-committed score boundary, with capture and region-selection feeding a board-state model — before any automated interpretation is trusted.
+**Goal:** Photograph a completed structure (or a selected region) on-device and receive a correct, reviewable score that is committed to the scoreboard only when a human confirms it.
 
-This stage builds the scaffolding that makes photo scoring trustworthy. The recognition layer can start as a stub/manual-assist; the architectural boundary is the real deliverable.
+The first automation payoff. It introduces the camera and the proposed-vs-committed boundary together, so no automated result is ever trusted before the review step exists.
 
 **Deliverables:**
-- **Photo capture:** capture an image of the board (or part of it) from the device camera, on-device, with no upload (privacy NFR).
-- **Region selection UI:** let the user indicate a region of the board (draw/tap-to-select) to constrain what gets scored.
-- **Recognition-layer interface:** a defined boundary that takes an image (and optional region) and returns either a partial board state or an explicit "cannot interpret." Initial implementation may be a stub that hands off to manual entry.
-- **Proposed vs committed score:** the score state model gains a clear separation between *proposed* results (from any automated path) and *committed* results; nothing automated is committed without an explicit human confirm.
-- **Review-and-apply flow shell:** a UI flow that shows a proposed result and lets the user confirm (commit) or reject/correct it.
+- **Photo capture:** capture an image of the board (or part of it) from the device camera, on-device, with no upload.
+- **Region selection:** let the user indicate a region of the photo (draw/tap-to-select) to constrain what gets scored.
+- **Single-feature recognition:** turn a photo of a completed city, road, or monastery (or the selected region) into the board state needed to score it, or report explicitly that it cannot.
+- **Feature scoring from photo:** run the Stage 1/Stage 5 engine over the recognised feature.
+- **Proposed vs committed score:** the score model separates *proposed* results from *committed* ones; the review flow shows the recognised feature, its computed score and credited meeples/players, and the user confirms (commit as a normal logged score event, reviewable/reversible via Stage 3) or rejects/corrects it.
+- **Clear failure + fallback:** an uninterpretable photo says so plainly and offers manual entry for that feature.
 
-**Dependencies:** Stage 3 (score state + review), Stage 1 (board-state model).
+**Dependencies:** Stage 3 (score state + review), Stage 4 (engine maturity), Stage 5 (scoring coverage).
 
 **Validation / acceptance.**
-- The app can capture a board photo on-device without any network upload.
+- The app captures a board photo on-device without any network upload.
 - The user can select a region of a captured photo.
-- The recognition interface can return "cannot interpret," and that path cleanly offers manual entry.
-- A proposed result is never reflected in committed totals until the user confirms it.
-- Confirming a proposed result commits it; rejecting it leaves committed totals unchanged.
-
-**Vision trace:** G2 (foundation), G4, G5, principles 4/5, features 4.2, 4.6, 5.3 (recognition layer, proposed/committed).
-
----
-
-## Stage 7 — Photo-based feature scoring
-
-**Goal:** Photograph a completed structure (or selected region) and receive a correct, reviewable score that can be applied to the scoreboard.
-
-The first real automation payoff, delivered behind the Stage 6 review boundary.
-
-**Deliverables:**
-- **Single-feature recognition:** turn a photo of a completed city, road, or monastery (or a user-selected region) into the board state needed to score that feature.
-- **Feature scoring from photo:** run the Stage 1/Stage 5 engine over the recognised feature to compute its score.
-- **Reviewable result:** show the recognised feature, its computed score, and which meeples/players it credits, before applying.
-- **Apply to scoreboard:** on confirmation, the feature's score is committed as a normal logged score event (so it remains reviewable/reversible via Stage 3).
-- **Clear failure + fallback:** if the photo cannot be interpreted, say so plainly and offer manual entry for that feature.
-
-**Dependencies:** Stage 6, Stage 5 (scoring coverage), Stage 4 (engine maturity).
-
-**Validation / acceptance.**
 - For a clearly photographed completed feature, the app proposes the correct score and the correct crediting of meeples/players.
-- The proposed result must be confirmed before it affects committed totals.
+- A proposed result is never reflected in committed totals until the user confirms it; rejecting it leaves committed totals unchanged.
 - A confirmed photo score appears in the event log and is reversible like any manual entry.
 - An uninterpretable photo yields a clear message and a manual-entry fallback — never a fabricated score.
-- A reviewable result is produced "in seconds" for a typical feature (performance NFR).
+- Target: a reviewable result is produced within seconds for a typical feature photo.
 
-**Vision trace:** G2, G4, G5, features 4.2, 4.6, success phase "Feature scoring".
+**Vision trace:** G2, G4, G5; principles 4/5; features 5.2, 5.6; constraint "privacy"; success criteria 2, 4, 5; phase "Feature scoring".
 
 ---
 
-## Stage 8 — Photo-based final scoring
+## Stage 7 — Photo-based final scoring
 
 **Goal:** Photograph the finished board and produce the complete end-of-game tally automatically — including farmers — fully reviewable before it becomes official.
-
-The most ambitious recognition stage: whole-board interpretation feeding the full end-game engine from Stage 4.
 
 **Deliverables:**
 - **Full-board recognition:** turn a photo (or set of photos) of the finished board into a complete board state.
@@ -242,7 +214,7 @@ The most ambitious recognition stage: whole-board interpretation feeding the ful
 - **Whole-result review:** the entire computed final tally is presented for human review and correction before it becomes the official result.
 - **Partial-recognition handling:** where parts of the board cannot be interpreted, those parts fail loudly and drop to manual entry while the rest is still computed.
 
-**Dependencies:** Stage 7 (recognition + review pattern), Stage 4 (final/farmer engine), Stage 5 (expansion coverage).
+**Dependencies:** Stage 6 (recognition + review pattern), Stage 4 (final/farmer engine), Stage 5 (expansion coverage).
 
 **Validation / acceptance.**
 - For a clearly photographed finished base-game board, the app produces a complete final tally, including correct farmer scoring.
@@ -250,24 +222,22 @@ The most ambitious recognition stage: whole-board interpretation feeding the ful
 - No computed final result becomes official without explicit human confirmation.
 - Unrecognised regions are flagged and routed to manual entry rather than guessed.
 
-**Vision trace:** G1, G2, G4, G5, features 4.3, 4.6, success phase "Final scoring".
+**Vision trace:** G1, G2, G4, G5; features 5.3, 5.6; success criteria 1, 2, 4, 5; phase "Final scoring".
 
 ---
 
-## Stage 9 — Board validation
+## Stage 8 — Board validation
 
 **Goal:** Detect illegal tile placements and configurations and report them clearly for human judgement — assist and flag, never override.
 
-The final maturity step, layered on the recognised/known board state.
-
 **Deliverables:**
 - **Validation engine:** platform-independent logic that checks a board state against the catalog for illegal placements and configurations (edge mismatches, illegal adjacencies, invalid meeple placements).
-- **Validation from recognised or known state:** run validation over board state from recognition (Stage 8) or otherwise known state.
+- **Validation from recognised or known state:** run validation over board state from recognition (Stage 7) or otherwise known state.
 - **Clear reporting:** for each flagged issue, explain *what* appears wrong and *where*, so players can judge whether it is a real violation or a recognition error.
 - **Advisory only:** flags are surfaced for human decision; the app never auto-corrects or overrides players.
 - **Validation test suite:** legal and illegal configurations across base game and supported expansions.
 
-**Dependencies:** Stage 1 (catalog/board state), Stage 8 (recognised full-board state), Stage 5 (expansion rules).
+**Dependencies:** Stage 1 (catalog/board state), Stage 7 (recognised full-board state), Stage 5 (expansion rules).
 
 **Validation / acceptance.**
 - The validation engine correctly flags canonical illegal configurations and passes legal ones, verified by automated tests.
@@ -275,15 +245,14 @@ The final maturity step, layered on the recognised/known board state.
 - Validation never modifies the score or the board on its own — it only reports.
 - Recognition-induced false positives are presented as "review this," consistent with human-in-the-loop.
 
-**Vision trace:** G4, G5, principle 4/5, features 4.4, 5.3 (validation engine), success phase "Validation".
+**Vision trace:** G4, G5; principles 2/4/5; features 5.4; success criterion 7; phase "Validation".
 
 ---
 
 ## Cross-stage notes
 
-- **Native mobile** (vision §5.2) is intentionally **not** its own stage here. The platform-independent core (Stages 1, 4, 5) is built so a native target can reuse it later; that effort will be added as a new stage when prioritised, after the web maturity curve is complete.
-- **Accessibility, performance, and privacy** NFRs are not deferred to a single stage — they are embedded in the acceptance criteria of the stages where they first apply (colour-blind-safe colours in Stage 2, durability in Stage 3, on-device/no-upload in Stage 6, "seconds" in Stage 7).
-- **Spec-first discipline:** each stage is implemented via the AIDE work-item workflow; this roadmap defines *what* and *in what order*, not the per-feature specs.
+- **Native mobile apps** are out of scope for now (vision §8); the platform-independent core keeps the option open.
+- **Accessibility and privacy constraints** (vision §7) are embedded in the acceptance criteria where they first apply: colour-not-alone meeple colours in Stage 2, on-device/no-upload capture in Stage 6.
 
 ---
 
