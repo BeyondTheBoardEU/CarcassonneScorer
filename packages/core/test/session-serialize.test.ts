@@ -3,6 +3,7 @@ import {
   addScoreEvent,
   createSession,
   deserializeSession,
+  meepleColourIds,
   serializeSession,
   SessionError,
   SESSION_VERSION,
@@ -17,7 +18,7 @@ function makePlayers(count: number): Player[] {
   return Array.from({ length: count }, (_, i) => ({
     id: `p${i}`,
     name: `Player ${i}`,
-    colourId: `colour-${i}`,
+    colourId: meepleColourIds[i],
   }));
 }
 
