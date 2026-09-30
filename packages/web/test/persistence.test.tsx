@@ -197,13 +197,12 @@ describe("App — restore flow (Item 019)", () => {
 
     render(<App storage={storage} />);
 
-    // The event log should have one entry (Item 018 renders event-log-row entries)
+    // Assert the rendered event log itself (Item 018's event-log-row-<id>),
+    // not storage.load() on data this test seeded directly.
     expect(screen.getByTestId("play-view")).toBeDefined();
-    // Storage restored correctly
-    const loaded = storage.load();
-    expect(loaded).not.toBeNull();
-    expect(loaded!.events).toHaveLength(1);
-    expect(loaded!.events[0]!.delta).toBe(10);
+    expect(screen.getByTestId("event-log-row-e0")).toBeDefined();
+    expect(screen.getByTestId("event-log-delta-e0").textContent).toBe("+10");
+    expect(screen.getByTestId("event-log-reason-e0").textContent).toContain("city");
   });
 
   it("persists on score change: after addScore, re-mounted App has the new event", () => {
@@ -282,5 +281,91 @@ describe("App — restore flow (Item 019)", () => {
     expect(() => render(<App storage={storage} />)).not.toThrow();
     expect(screen.getByTestId("setup-view")).toBeDefined();
     expect(screen.queryByTestId("play-view")).toBeNull();
+  });
+
+  it("does not clear storage on initial mount when the session starts null", () => {
+    // initialSession explicitly overrides the storage.load() hydrate read
+    // (App: `props.initialSession !== undefined ? props.initialSession :
+    // storage.load()`), so the provider starts with session === null while
+    // storage still holds a previously saved game. The persist effect must
+    // not treat this initial null as a newGame() clear.
+    const storage = createLocalSessionStorage(storageKey);
+    const session = buildTestSession();
+    storage.save(session);
+
+    render(<App storage={storage} initialSession={null} />);
+    expect(screen.getByTestId("setup-view")).toBeDefined();
+
+    expect(storage.load()).toEqual(session);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Part 3: bad stored session under the real default key
+// ---------------------------------------------------------------------------
+
+describe("App — bad stored session at the default key (Item 019)", () => {
+  beforeEach(() => {
+    localStorage.removeItem(DEFAULT_SESSION_STORAGE_KEY);
+  });
+
+  afterEach(() => {
+    cleanup();
+    localStorage.removeItem(DEFAULT_SESSION_STORAGE_KEY);
+  });
+
+  it("a semantically invalid payload (unknown colourId) at the default key starts at setup and is cleared", () => {
+    const badPayload = {
+      version: SESSION_VERSION,
+      players: [
+        { id: "p0", name: "Alice", colourId: "purple" },
+        { id: "p1", name: "Bob", colourId: "blue" },
+      ],
+      events: [],
+    };
+    localStorage.setItem(DEFAULT_SESSION_STORAGE_KEY, JSON.stringify(badPayload));
+
+    // No `storage` prop: App falls back to its default, localStorage-backed
+    // storage under DEFAULT_SESSION_STORAGE_KEY.
+    expect(() => render(<App />)).not.toThrow();
+    expect(screen.getByTestId("setup-view")).toBeDefined();
+    expect(screen.queryByTestId("play-view")).toBeNull();
+    expect(localStorage.getItem(DEFAULT_SESSION_STORAGE_KEY)).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Part 4: non-finite delta guard (review fix — GameProvider.addScore)
+// ---------------------------------------------------------------------------
+
+describe("GameProvider.addScore — non-finite delta guard (Item 019)", () => {
+  const storageKey = "non-finite-delta-test-session";
+
+  afterEach(() => {
+    cleanup();
+    localStorage.removeItem(storageKey);
+  });
+
+  it("a several-hundred-digit custom amount (parses to Infinity) adds no event and leaves totals unchanged", () => {
+    const players: Player[] = [
+      { id: "p0", name: "Alice", colourId: "red" },
+      { id: "p1", name: "Bob", colourId: "blue" },
+    ];
+    const session = createSession(players);
+    const storage = createLocalSessionStorage(storageKey);
+
+    render(<App storage={storage} initialSession={session} />);
+
+    // All-digit, so it passes PlayerEntryRow's /^[+-]?\d+$/ guard, but
+    // Number.parseInt rounds a numeral this long to Infinity.
+    const hugeDigits = "1".repeat(400);
+    fireEvent.change(screen.getByTestId("score-entry-amount-p0"), {
+      target: { value: hugeDigits },
+    });
+    fireEvent.click(screen.getByTestId("score-entry-apply-p0"));
+
+    expect(screen.getByTestId("scoreboard-total-p0").textContent).toBe("0");
+    // No event was added: the log is still in its empty state.
+    expect(screen.getByTestId("event-log-empty")).toBeDefined();
   });
 });

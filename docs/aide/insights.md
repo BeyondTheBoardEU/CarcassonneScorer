@@ -38,3 +38,4 @@
 _Entries below, newest last._
 
 - [ ] framework — `aide test`/`aide merge`'s suite runner calls `subprocess.run(argv, cwd=...)` without `shell=True` and unconditionally appends pytest-only `--continue-on-collection-errors --junitxml=...` flags; with this project's `python.test_command = "npm test"` on Windows this crashes with `FileNotFoundError: [WinError 2]` before any test runs (npm resolves to `npm.cmd`, which needs a shell) — confirmed by running `npm test` directly (366/366 tests green, 20 files) while the CLI wrapper fails. *(item 019, 2026-09-27, engine 2.9.0)*
+- [ ] defect — addScoreEvent (packages/core/src/session/session.ts) accepts a non-finite delta; item 019 guards only GameProvider.addScore, so harden addScoreEvent itself when an item next authorises session.ts *(item 019, 2026-09-30, engine 2.9.0)*

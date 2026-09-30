@@ -202,3 +202,125 @@ describe("deserializeSession — version mismatch", () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// Semantically invalid input (well-typed fields, invalid meaning) — review
+// fix: deserializeSession re-validates the same structural invariants
+// createSession/addScoreEvent enforce, instead of stopping at field types.
+// ---------------------------------------------------------------------------
+
+describe("deserializeSession — semantically invalid input", () => {
+  it("throws SessionError(malformed-input) for an unknown colourId", () => {
+    const bad = {
+      version: SESSION_VERSION,
+      players: [
+        { id: "p0", name: "Alice", colourId: "red" },
+        { id: "p1", name: "Bob", colourId: "purple" },
+      ],
+      events: [],
+    };
+    expect(() => deserializeSession(JSON.stringify(bad))).toThrowError(SessionError);
+    try {
+      deserializeSession(JSON.stringify(bad));
+    } catch (e) {
+      expect((e as SessionError).kind).toBe("malformed-input");
+    }
+  });
+
+  it("throws SessionError for too few players", () => {
+    const bad = { version: SESSION_VERSION, players: [], events: [] };
+    expect(() => deserializeSession(JSON.stringify(bad))).toThrowError(SessionError);
+    let result: GameSession | undefined;
+    let threw = false;
+    try {
+      result = deserializeSession(JSON.stringify(bad));
+    } catch {
+      threw = true;
+    }
+    expect(threw).toBe(true);
+    expect(result).toBeUndefined();
+  });
+
+  it("throws SessionError for duplicate player ids", () => {
+    const bad = {
+      version: SESSION_VERSION,
+      players: [
+        { id: "p0", name: "Alice", colourId: "red" },
+        { id: "p0", name: "Bob", colourId: "blue" },
+      ],
+      events: [],
+    };
+    expect(() => deserializeSession(JSON.stringify(bad))).toThrowError(SessionError);
+    let result: GameSession | undefined;
+    let threw = false;
+    try {
+      result = deserializeSession(JSON.stringify(bad));
+    } catch {
+      threw = true;
+    }
+    expect(threw).toBe(true);
+    expect(result).toBeUndefined();
+  });
+
+  it("throws SessionError for duplicate colours", () => {
+    const bad = {
+      version: SESSION_VERSION,
+      players: [
+        { id: "p0", name: "Alice", colourId: "red" },
+        { id: "p1", name: "Bob", colourId: "red" },
+      ],
+      events: [],
+    };
+    expect(() => deserializeSession(JSON.stringify(bad))).toThrowError(SessionError);
+    let result: GameSession | undefined;
+    let threw = false;
+    try {
+      result = deserializeSession(JSON.stringify(bad));
+    } catch {
+      threw = true;
+    }
+    expect(threw).toBe(true);
+    expect(result).toBeUndefined();
+  });
+
+  it("throws SessionError when an event's playerId names no player", () => {
+    const bad = {
+      version: SESSION_VERSION,
+      players: [
+        { id: "p0", name: "Alice", colourId: "red" },
+        { id: "p1", name: "Bob", colourId: "blue" },
+      ],
+      events: [{ id: "e0", playerId: "ghost", delta: 5, timestamp: 1000 }],
+    };
+    expect(() => deserializeSession(JSON.stringify(bad))).toThrowError(SessionError);
+    let result: GameSession | undefined;
+    let threw = false;
+    try {
+      result = deserializeSession(JSON.stringify(bad));
+    } catch {
+      threw = true;
+    }
+    expect(threw).toBe(true);
+    expect(result).toBeUndefined();
+  });
+
+  it("throws SessionError(malformed-input) for duplicate event ids", () => {
+    const bad = {
+      version: SESSION_VERSION,
+      players: [
+        { id: "p0", name: "Alice", colourId: "red" },
+        { id: "p1", name: "Bob", colourId: "blue" },
+      ],
+      events: [
+        { id: "e0", playerId: "p0", delta: 5, timestamp: 1000 },
+        { id: "e0", playerId: "p1", delta: 3, timestamp: 2000 },
+      ],
+    };
+    expect(() => deserializeSession(JSON.stringify(bad))).toThrowError(SessionError);
+    try {
+      deserializeSession(JSON.stringify(bad));
+    } catch (e) {
+      expect((e as SessionError).kind).toBe("malformed-input");
+    }
+  });
+});
