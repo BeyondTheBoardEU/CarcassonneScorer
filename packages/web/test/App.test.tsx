@@ -2,10 +2,15 @@ import { describe, it, expect, afterEach } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { App } from "../src/App.js";
 import type { GameSession } from "@carcassonne/core";
+import { DEFAULT_SESSION_STORAGE_KEY } from "../src/persistence/index.js";
 
 describe("App", () => {
   afterEach(() => {
     cleanup();
+    // Clear the default persistence key so App renders with no prior session
+    // in each test (Item 019 wires save/clear to localStorage via the default
+    // storage, so test isolation requires clearing it between tests).
+    localStorage.removeItem(DEFAULT_SESSION_STORAGE_KEY);
   });
 
   it("renders the app shell heading", () => {

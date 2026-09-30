@@ -101,6 +101,8 @@ export {
   createSession,
   addScoreEvent,
   computeTotals,
+  serializeSession,
+  deserializeSession,
 } from "./session/index.js";
 
 // ---------------------------------------------------------------------------

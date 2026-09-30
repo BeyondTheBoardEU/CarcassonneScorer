@@ -22,7 +22,7 @@
 | Stage | Title | Objectives | Status |
 |-------|-------|-----------|--------|
 | 1 | Foundation: tile catalog + scoring engine core | G6 | ✅ |
-| 2 | Manual scorepad MVP (base game) | G1, G3, G6 | 🚧 |
+| 2 | Manual scorepad MVP (base game) | G1, G3, G6 | ✅ |
 | 3 | Offline durability + review & correction | G3, G4 | 📋 |
 | 4 | End-game tally assistant including farmers | G1, G4 | 📋 |
 | 5 | Expansion coverage (major expansions) | G5, G6 | 📋 |
@@ -73,7 +73,7 @@
 
 ---
 
-## Stage 2 — Manual scorepad MVP (base game) — 🚧
+## Stage 2 — Manual scorepad MVP (base game) — ✅
 
 **Goal.** Usable web app to set up a base-game session and track scores by hand with live totals, persisted locally. *(Maturity phase: Scorepad · Dependencies: Stage 1)*
 
@@ -85,16 +85,21 @@
 - ✅ Running scoreboard: always-visible current totals per player, readable at a glance. *(Item 016)*
 - ✅ Manual score entry: add or adjust points for any player at any time. *(Item 017)*
 - ✅ Score event log: every change recorded as a traceable event (who, how many, when/why). *(Item 018)*
-- 🚧 Local persistence (first cut): game state and event log saved to local storage; reload restores the in-progress game. *(Item 019)*
-- 📋 Stage 2 acceptance end-to-end suite driving the assembled app through every Stage 2 criterion. *(Item 020)*
+- ✅ Local persistence (first cut): game state and event log saved to local storage; reload restores the in-progress game. *(Item 019)*
+- ✅ Stage 2 acceptance end-to-end suite driving the assembled app through every Stage 2 criterion. *(Item 020)*
 
 **Acceptance.**
 
 - [x] Set up a 2–6 player game, name players, assign distinct meeple colours.
+  - **2026-09-30** → Item 020 end-to-end evidence: packages/web/test/stage2-acceptance.test.tsx ac1 (2- and 6-player setup, names in entry order) and ac2/ac3 (six distinct meepleColours-backed colour labels; chosen colour, not row default, is assigned) driving the assembled App via aide test, green 2026-09-30 (385 tests).
 - [x] Add/adjust points for any player; totals update immediately. *(Item 016 delivered the "totals update immediately" / always-visible half via the live `Scoreboard`; Item 017 ✅ adds the "add/adjust points for any player" entry controls — quick increments and a custom +/- amount, dispatched via `addScore` for any player in the session.)*
+  - **2026-09-30** → Item 020 end-to-end evidence: packages/web/test/stage2-acceptance.test.tsx ac4/ac5 assert every player's scoreboard total, read immediately after each of the scenario's 4 positive and 2 negative entries (incl. below zero), equals the running sum of applied deltas, driving the assembled App via aide test, green 2026-09-30.
 - [x] Every score change appears in the event log. *(Item 018 ✅: the `EventLog` component renders every entry in `session.events` in sync with count and content, in a documented newest-first deterministic order; verified by the checker against dispatched `addScore` events.)*
-- [ ] Reloading restores the exact in-progress game (players, totals, log).
+  - **2026-09-30** → Item 020 end-to-end evidence: packages/web/test/stage2-acceptance.test.tsx ac6 asserts the event log shows exactly 6 rows, (player, signed delta, reason) matching the scenario's 6 entries in reverse (newest-first), driving the assembled App via aide test, green 2026-09-30.
+- [x] Reloading restores the exact in-progress game (players, totals, log). *(Item 019 AC8 verified 2026-09-30 via aide test (exit 0, 366 tests) incl. packages/web/test/persistence.test.tsx restore-flow: pre-seeded storage restores play view with players/totals, event log entries present, addScore+remount reflects persisted event, newGame+remount returns to setup with storage cleared.)*
+  - **2026-09-30** → Item 020 end-to-end evidence: packages/web/test/stage2-acceptance.test.tsx ac7 unmounts and re-mounts a fresh App (no props) after the 6-entry scenario and asserts the play view returns with an identical (scoreboard, event-log) snapshot; reload-then-continue further shows a post-reload entry builds on the restored session. aide test green 2026-09-30.
 - [x] No scoring arithmetic in the UI — totals come from the core. *(Item 016 established the scoreboard performs no summation; Item 017 ✅ completes the end-to-end proof: entry → core `addScoreEvent` → `computeTotals` → scoreboard, with no `reduce`/sum/tally logic anywhere in `packages/web/src`, confirmed by the checker.)*
+  - **2026-09-30** → Item 020 end-to-end evidence: packages/web/test/stage2-acceptance-totals-provenance.test.tsx ac8 substitutes @carcassonne/core's computeTotals (via vi.mock, wrapping the real reducer) to add 1000 to every player's real total; the assembled App's displayed totals reflect that offset, proving totals are read from the core reducer rather than summed in the UI. aide test green 2026-09-30.
 
 **Vision trace:** G1, G3 (first cut), G6; feature 5.1; constraint "accessibility"; architecture §6 (web, persistence).
 

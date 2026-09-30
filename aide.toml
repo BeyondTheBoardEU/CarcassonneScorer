@@ -8,7 +8,9 @@ tests_dir = "packages"
 docs_dir = "docs/aide"
 
 [python]
-test_command = "npm test"
+# Runs `npm test` via a node wrapper: aide.py spawns this without a shell (so a
+# bare `npm` fails on Windows) and appends pytest-only flags vitest rejects.
+test_command = "node scripts/aide-test.mjs"
 # The Python `env --bootstrap` builds the venv from — a command on PATH
 # ("python3.12", "py -3.12") or an absolute path. Unset, it is whatever Python
 # launched the CLI. Set it when the dependency closure resolves on a narrower

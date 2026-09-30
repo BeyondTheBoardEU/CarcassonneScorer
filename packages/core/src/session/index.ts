@@ -16,3 +16,4 @@ export {
   addScoreEvent,
 } from "./session.js";
 export { computeTotals } from "./tally.js";
+export { serializeSession, deserializeSession } from "./serialize.js";
