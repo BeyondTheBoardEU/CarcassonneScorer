@@ -15,11 +15,22 @@ import type { GameSession, Player } from "../src/index.js";
 // ---------------------------------------------------------------------------
 
 function makePlayers(count: number): Player[] {
-  return Array.from({ length: count }, (_, i) => ({
-    id: `p${i}`,
-    name: `Player ${i}`,
-    colourId: meepleColourIds[i],
-  }));
+  if (count > meepleColourIds.length) {
+    throw new Error(
+      `makePlayers: requested ${count} players but only ${meepleColourIds.length} meeple colours exist`,
+    );
+  }
+  return Array.from({ length: count }, (_, i) => {
+    const colourId = meepleColourIds[i];
+    if (colourId === undefined) {
+      throw new Error(`makePlayers: no meeple colour at index ${i}`);
+    }
+    return {
+      id: `p${i}`,
+      name: `Player ${i}`,
+      colourId,
+    };
+  });
 }
 
 function buildNonTrivialSession(): GameSession {
