@@ -22,7 +22,7 @@
 | Stage | Title | Objectives | Status |
 |-------|-------|-----------|--------|
 | 1 | Foundation: tile catalog + scoring engine core | G6 | ✅ |
-| 2 | Manual scorepad MVP (base game) | G1, G3, G6 | 🚧 |
+| 2 | Manual scorepad MVP (base game) | G1, G3, G6 | ✅ |
 | 3 | Offline durability + review & correction | G3, G4 | 📋 |
 | 4 | End-game tally assistant including farmers | G1, G4 | 📋 |
 | 5 | Expansion coverage (major expansions) | G5, G6 | 📋 |
@@ -73,7 +73,7 @@
 
 ---
 
-## Stage 2 — Manual scorepad MVP (base game) — 🚧
+## Stage 2 — Manual scorepad MVP (base game) — ✅
 
 **Goal.** Usable web app to set up a base-game session and track scores by hand with live totals, persisted locally. *(Maturity phase: Scorepad · Dependencies: Stage 1)*
 
@@ -86,7 +86,7 @@
 - ✅ Manual score entry: add or adjust points for any player at any time. *(Item 017)*
 - ✅ Score event log: every change recorded as a traceable event (who, how many, when/why). *(Item 018)*
 - ✅ Local persistence (first cut): game state and event log saved to local storage; reload restores the in-progress game. *(Item 019)*
-- 🔍 Stage 2 acceptance end-to-end suite driving the assembled app through every Stage 2 criterion. *(Item 020)*
+- ✅ Stage 2 acceptance end-to-end suite driving the assembled app through every Stage 2 criterion. *(Item 020)*
 
 **Acceptance.**
 

@@ -27,3 +27,4 @@ _One row per item, newest last._
 | Item | Queue | Stage | Kind | Outcome | ACs | Tests | Files | Rounds | Blocking | Minor | Nit | Engine | Date | Suite s | Inherited |
 |------|-------|-------|------|---------|-----|-------|-------|--------|----------|-------|-----|--------|------|---------|-----------|
 | 019 | 002 | 2 | normal | merged | 9 | 0 | 14 | 4 | 1 | 3 | 2 | 2.9.0 | 2026-09-30 | 10 (reused) |  |
+| 020 | 002 | 2 | normal | merged | 8 | 0 | 5 | 1 | 0 | 0 | 4 | 2.9.0 | 2026-09-30 | 11 |  |
