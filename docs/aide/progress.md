@@ -86,7 +86,7 @@
 - ✅ Manual score entry: add or adjust points for any player at any time. *(Item 017)*
 - ✅ Score event log: every change recorded as a traceable event (who, how many, when/why). *(Item 018)*
 - ✅ Local persistence (first cut): game state and event log saved to local storage; reload restores the in-progress game. *(Item 019)*
-- 🚧 Stage 2 acceptance end-to-end suite driving the assembled app through every Stage 2 criterion. *(Item 020)*
+- 🔍 Stage 2 acceptance end-to-end suite driving the assembled app through every Stage 2 criterion. *(Item 020)*
 
 **Acceptance.**
 
