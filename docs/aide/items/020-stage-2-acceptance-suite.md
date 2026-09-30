@@ -259,6 +259,32 @@ default.
 
 ## Decisions & Trade-offs
 
-To be updated during implementation.
-
-- **Left open:** whether and when to add a real-browser e2e runner (Playwright) — it needs a new dependency, network for the browser download and Node ≥ 18 on the host, none of which a `prototype` Stage 2 item may assume; Stage 3's criteria (network disabled, killing the tab mid-game) cannot be observed in jsdom, so the runner decision belongs to the Stage 3 queue.
+- **Runner: Vitest + jsdom + Testing Library, not Playwright (A1).** Item 011's
+  spec had named Playwright as the e2e runner for this item, but it was never
+  installed, the vision's posture is `prototype`, the Node on the implementing
+  machine is below Playwright's Node ≥ 18 floor, and a browser download would
+  need network the suite must not depend on. The suite instead drives the
+  assembled `App` in the gate's existing `web` Vitest project (jsdom) with
+  `fireEvent` from `@testing-library/react`, and the real-browser gap is
+  covered by the Validation section's replay rather than a new dependency.
+- **Reload is simulated as unmount + fresh mount over jsdom `localStorage`
+  (A2).** `App` reads `storage.load()` once in a lazy `useState` initializer,
+  and no module state outside that persisted storage participates in
+  hydration. `cleanup()` (unmount) followed by a fresh `render(<App />)`
+  therefore re-runs the same startup hydrate path a real page reload takes,
+  without needing a browser to reload a page.
+- **AC8 lives in its own file, not alongside AC1-AC7 (A4).** `vi.mock` of
+  `@carcassonne/core` substitutes the module for every test in the file it
+  appears in. AC8 is the only criterion that needs `computeTotals` replaced
+  (to prove the UI displays the reducer's output rather than a UI-side sum);
+  splitting it into `stage2-acceptance-totals-provenance.test.tsx` keeps
+  AC1-AC7 and the `reload-then-continue` case running against the real,
+  unsubstituted core.
+- **Controls are located by accessible name/testid, matching how each part of
+  the UI exposes itself (A3).** Player ids are generated at setup, so no
+  stable id exists to query by; inputs, selects and the semantic buttons
+  (quick/custom score entry, **Apply to `<name>`**) are found by label text or
+  role/accessible name, while the play/setup view containers and the
+  scoreboard/event-log rows — which have no natural accessible name — are
+  found by `data-testid`.
+- **Left open:** whether and when to add a real-browser e2e runner (Playwright) — it needs a new dependency, network for the browser download and Node ≥ 18 on the host, none of which a `prototype` Stage 2 item may assume; Stage 3's criteria (network disabled, killing the tab mid-game) cannot be observed in jsdom, so the runner decision belongs to the Stage 3 queue. The real-browser replay in Validation stays ❓ Unverified until a browser-capable runner exists on the validating host.

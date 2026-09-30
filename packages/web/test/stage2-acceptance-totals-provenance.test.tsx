@@ -39,14 +39,14 @@ import { DEFAULT_SESSION_STORAGE_KEY } from "../src/persistence/index.js";
 /** Drives the real setup form (A3): adds rows, types names, starts the game. */
 function setUpGame(names: string[]): void {
   for (let n = 3; n <= names.length; n += 1) {
-    fireEvent.click(screen.getByTestId("add-player"));
+    fireEvent.click(screen.getByRole("button", { name: "Add player" }));
   }
   names.forEach((name, i) => {
     fireEvent.change(screen.getByLabelText(`Player ${i + 1} name`), {
       target: { value: name },
     });
   });
-  fireEvent.click(screen.getByTestId("start-game"));
+  fireEvent.click(screen.getByRole("button", { name: "Start game" }));
 }
 
 interface ScenarioEntry {

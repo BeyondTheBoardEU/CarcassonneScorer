@@ -29,7 +29,7 @@ import { DEFAULT_SESSION_STORAGE_KEY } from "../src/persistence/index.js";
  */
 function setUpGame(names: string[], colourOverrides?: Record<number, string>): void {
   for (let n = 3; n <= names.length; n += 1) {
-    fireEvent.click(screen.getByTestId("add-player"));
+    fireEvent.click(screen.getByRole("button", { name: "Add player" }));
   }
   names.forEach((name, i) => {
     fireEvent.change(screen.getByLabelText(`Player ${i + 1} name`), {
@@ -43,7 +43,7 @@ function setUpGame(names: string[], colourOverrides?: Record<number, string>): v
       });
     }
   }
-  fireEvent.click(screen.getByTestId("start-game"));
+  fireEvent.click(screen.getByRole("button", { name: "Start game" }));
 }
 
 interface ScenarioEntry {
@@ -129,8 +129,9 @@ interface EventLogEntry {
  * (newest-first, A3). The player field is parsed off the leading name
  * segment of the rendered "<name> (<Colour>, <pattern>)" text (A3) — the
  * scenario's names (Ada/Bruno/Chen) contain no "(", so the split is exact.
- * The reason field strips the rendered " — <reason>" separator (A3),
- * whatever dash-like glyph it uses, leaving the raw reason text.
+ * The reason field strips the rendered " — <reason>" separator (A3) —
+ * the exact space/em-dash/space prefix A3 pins — leaving the raw reason
+ * text.
  */
 function readEventLog(): EventLogEntry[] {
   return screen.getAllByTestId(/^event-log-row-/).map((row) => {
@@ -140,7 +141,7 @@ function readEventLog(): EventLogEntry[] {
     return {
       player: playerText.split(" (")[0] ?? "",
       delta: within(row).getByTestId(`event-log-delta-${id}`).textContent ?? "",
-      reason: reasonNode ? (reasonNode.textContent ?? "").replace(/^[\s‐-―-]+/, "") : null,
+      reason: reasonNode ? (reasonNode.textContent ?? "").replace(/^ — /, "") : null,
     };
   });
 }
@@ -190,13 +191,14 @@ describe("Stage 2 acceptance suite (Item 020)", () => {
 
   it("ac3: the chosen colour, not the row's default, is the assigned colour", () => {
     render(<App />);
+    const player2ColourId = (screen.getByLabelText("Player 2 colour") as HTMLSelectElement).value;
     setUpGame(["P1", "P2"], { 1: "yellow" });
 
     const yellow = meepleColours.find((colour) => colour.id === "yellow")!;
-    const blue = meepleColours.find((colour) => colour.id === "blue")!;
+    const player2Colour = meepleColours.find((colour) => colour.id === player2ColourId)!;
     const rows = readScoreboard();
     expect(rows[0]!.colour).toBe(`(${yellow.name}, ${yellow.pattern})`);
-    expect(rows[1]!.colour).toBe(`(${blue.name}, ${blue.pattern})`);
+    expect(rows[1]!.colour).toBe(`(${player2Colour.name}, ${player2Colour.pattern})`);
   });
 
   it("ac4: adding points updates every player's total immediately after each positive entry", () => {
