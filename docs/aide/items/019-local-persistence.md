@@ -123,4 +123,67 @@ function createLocalSessionStorage(key?: string): SessionStorage;  // localStora
 
 ## Decisions & Trade-offs
 
-To be updated during implementation.
+- **`serializeSession` is a plain `JSON.stringify`.** Item 012's `GameSession`
+  is already a JSON-round-trippable plain shape (players, events, version),
+  so no intermediate DTO is needed — mirrors `serializeBoard`.
+- **`deserializeSession` validates field-by-field and never returns a partial
+  session.** It checks the JSON parses, that `version` is present and equals
+  `SESSION_VERSION` (else throws `SessionError("version-mismatch", …)`), and
+  that every player (`id`/`name`/`colourId`, non-empty strings) and every
+  event (`id`/`playerId` strings, `delta`/`timestamp` finite numbers, optional
+  `reason` string) is well-typed — else throws
+  `SessionError("malformed-input", …)` with a field-path in the message
+  (e.g. `events[2]: delta must be a finite number`). `SessionError.kind` was
+  extended with these two cases alongside the existing session-construction
+  ones (`player-count`, `duplicate-player-id`, `duplicate-colour`,
+  `unknown-player`) rather than introducing a second error type, since
+  callers already switch on `SessionError.kind`.
+- **The `SessionStorage` interface (`load`/`save`/`clear`) is the only
+  persistence seam the store touches.** `createLocalSessionStorage(key?)` is
+  the sole `localStorage`-backed implementation; tests inject a fake instead
+  of touching real browser storage. Keeping the interface tiny is what makes
+  a Stage 3 backend swap (e.g. IndexedDB) not require touching
+  `GameProvider`/`App`.
+- **`load()` never throws — corrupt, absent, blank, and version-mismatched
+  storage all collapse to `null`.** `localStorage.getItem` returning `null`
+  or an all-whitespace string is treated as "no game" without attempting to
+  deserialize. A `deserializeSession` throw (malformed JSON or version
+  mismatch) is caught, the bad key is removed via `storage.removeItem` (so it
+  can't poison a later load), and `null` is returned. Removal itself is
+  best-effort: a further `removeItem` failure is swallowed rather than
+  surfaced, since first-cut persistence must degrade rather than crash
+  startup.
+- **`localStorage` access is guarded at every entry point, not once at
+  module load.** `getLocalStorage()` treats both "the global doesn't exist"
+  (SSR/non-browser, though this app only ships to the browser — defensive
+  parity with the board module's guards) and "accessing the global throws"
+  (some browsers' privacy modes) as "unavailable," returning `undefined`
+  rather than throwing. `save`/`clear` no-op when storage is unavailable;
+  `load` returns `null`. `setItem` failures (e.g. quota exceeded mid-session)
+  are also swallowed in `save` — a failed save silently drops that write
+  rather than crashing the UI, accepting data loss over a crash for this
+  first cut (Stage 3's durability hardening is explicitly out of scope here).
+- **Startup hydrate goes through `App`, not `GameProvider`, so a literal
+  `initialSession` override still works.** `App` resolves
+  `initialSession = props.initialSession ?? storage.load()` and passes both
+  the resolved session and the same `storage` instance into `GameProvider`.
+  This keeps `GameProvider`'s own `initialSession` prop meaning exactly what
+  Item 014 defined ("the session to start from"), with `App` deciding *where*
+  that value comes from — real storage in production, an injected fake or a
+  literal override in tests.
+- **Save-on-change and clear-on-`newGame` are one `useEffect` in
+  `GameProvider`, keyed on `state.session`.** When `state.session` is
+  non-null it calls `storage.save(state.session)`; when it is `null` (set by
+  `newGame`) it calls `storage.clear()`. This effect is the single place the
+  store touches persistence, per the spec's "keep this the only place"
+  design decision — no other component calls `storage.save`/`clear`
+  directly. The first run after a startup hydrate re-saves the just-loaded
+  session; this is a harmless no-op (same bytes back to the same key) rather
+  than special-cased away, since guarding against it would add branching for
+  no behavioural gain.
+- **Both `App`'s and `GameProvider`'s default `storage` are the same
+  `createLocalSessionStorage()` call site (module-level `defaultStorage` in
+  each file), and `App` always passes its resolved `storage` down explicitly.**
+  This guarantees the hydrate read and the save/clear writes agree on the
+  same backing key even though `GameProvider` also declares its own default
+  for standalone use (e.g. by tests that mount it without `App`).
