@@ -12,8 +12,9 @@
  * any structural problem throws instead.
  */
 
+import { hasMeepleColour } from "../colours/index.js";
 import { SessionError } from "./errors.js";
-import { SESSION_VERSION } from "./session.js";
+import { SESSION_VERSION, addScoreEvent, createSession } from "./session.js";
 import type { GameSession, Player, ScoreEvent } from "./types.js";
 
 // ---------------------------------------------------------------------------
@@ -38,11 +39,25 @@ export function serializeSession(session: GameSession): string {
 /**
  * Parses and validates a JSON string produced by `serializeSession`.
  *
+ * Beyond shape/type checks, the parsed players and events are re-validated
+ * against the same structural invariants `createSession`/`addScoreEvent`
+ * enforce (player count bounds, unique player ids, unique colours, every
+ * event's `playerId` naming an existing player) by calling those functions
+ * rather than duplicating their checks, plus two checks they don't cover:
+ * every player's `colourId` must be a known meeple colour
+ * (`hasMeepleColour`), and event ids must be unique. A semantically invalid
+ * payload (e.g. an unknown `colourId`) is rejected here rather than left to
+ * crash later when the UI tries to render it.
+ *
  * @throws {SessionError} kind "malformed-input" on any of:
  *   - invalid JSON
  *   - missing or wrong-typed top-level fields
  *   - malformed player or event entries (missing fields, bad delta/timestamp
  *     type, etc.)
+ *   - an unknown player `colourId`, or a duplicate event `id`
+ * @throws {SessionError} kind "player-count" | "duplicate-player-id" |
+ *   "duplicate-colour" | "unknown-player" if the parsed players/events
+ *   violate the invariants `createSession`/`addScoreEvent` enforce.
  * @throws {SessionError} kind "version-mismatch" if the parsed `version`
  *   does not equal `SESSION_VERSION`.
  */
@@ -84,7 +99,25 @@ export function deserializeSession(json: string): GameSession {
   }
   const events: ScoreEvent[] = (obj["events"] as unknown[]).map((e, i) => parseScoreEvent(e, i));
 
-  return { version, players, events };
+  // Re-validate structural invariants via the same functions
+  // createSession/addScoreEvent use to enforce them, rather than duplicating
+  // their checks: player count bounds, unique player ids, unique colours
+  // (createSession), and every event's playerId naming an existing player
+  // (addScoreEvent). Both throw SessionError with their existing kinds
+  // ("player-count", "duplicate-player-id", "duplicate-colour",
+  // "unknown-player"), which propagate unchanged.
+  let session = createSession(players);
+
+  const seenEventIds = new Set<string>();
+  for (const event of events) {
+    if (seenEventIds.has(event.id)) {
+      throw malformed(`events: duplicate event id "${event.id}"`);
+    }
+    seenEventIds.add(event.id);
+    session = addScoreEvent(session, event);
+  }
+
+  return session;
 }
 
 // ---------------------------------------------------------------------------
@@ -110,6 +143,9 @@ function parsePlayer(raw: unknown, index: number): Player {
   }
   if (typeof p["colourId"] !== "string" || p["colourId"] === "") {
     throw malformed(`${ctx} colourId must be a non-empty string`);
+  }
+  if (!hasMeepleColour(p["colourId"])) {
+    throw malformed(`${ctx} colourId "${p["colourId"]}" is not a known meeple colour`);
   }
 
   return {

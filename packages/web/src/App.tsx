@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { CORE_READY, coreVersion } from "@carcassonne/core";
 import type { GameSession } from "@carcassonne/core";
 import { GameProvider, useGame } from "./state/index.js";
@@ -92,7 +93,13 @@ export interface AppProps {
  */
 export function App(props: AppProps = {}): JSX.Element {
   const storage = props.storage ?? defaultStorage;
-  const initialSession = props.initialSession !== undefined ? props.initialSession : storage.load();
+  // `storage.load()` has a side effect (it clears a corrupt stored key), so
+  // it must not run on every render (or twice under StrictMode) — a lazy
+  // `useState` initializer runs it exactly once, on mount, regardless of how
+  // many times `App` re-renders afterwards.
+  const [initialSession] = useState<GameSession | null>(() =>
+    props.initialSession !== undefined ? props.initialSession : storage.load(),
+  );
 
   return (
     <GameProvider initialSession={initialSession} storage={storage}>

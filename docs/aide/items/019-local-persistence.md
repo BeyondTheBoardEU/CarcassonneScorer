@@ -187,3 +187,65 @@ function createLocalSessionStorage(key?: string): SessionStorage;  // localStora
   This guarantees the hydrate read and the save/clear writes agree on the
   same backing key even though `GameProvider` also declares its own default
   for standalone use (e.g. by tests that mount it without `App`).
+- **Review fix: `deserializeSession` re-validates the same structural
+  invariants `createSession`/`addScoreEvent` already enforce, by calling
+  them, rather than duplicating the checks.** The original cut only checked
+  field *types* (string/number/shape), so a syntactically well-typed but
+  semantically invalid payload — e.g. two players sharing a `colourId`, an
+  event's `playerId` naming no player in the session, or a player `colourId`
+  that isn't a real meeple colour — deserialized successfully and only broke
+  later, inside `PlayerScoreRow`/`PlayerEntryRow`'s `getMeepleColour` call
+  during render, with no error boundary and the bad key never cleared (a
+  crash-on-every-reload). `deserializeSession` now: (1) keeps its own
+  field-shape checks, (2) additionally rejects a player `colourId` that
+  `hasMeepleColour` (from `packages/core/src/colours`) doesn't recognise, as
+  `"malformed-input"`; (3) calls `createSession(players)`, which throws its
+  existing `"player-count"` / `"duplicate-player-id"` / `"duplicate-colour"`
+  kinds unchanged; (4) rejects a duplicate event `id` as `"malformed-input"`
+  (no existing kind covers this); (5) folds each event through
+  `addScoreEvent(session, event)` in order, which throws its existing
+  `"unknown-player"` kind unchanged and builds the returned session. Every
+  new throw still surfaces as *some* `SessionError`, and `load()`'s catch is
+  already unconditional (any throw → clear the key, return `null`), so no
+  caller needed to change.
+- **Review fix: `App`'s startup hydrate is a lazy `useState` initializer, not
+  a render-body call.** `storage.load()` has a side effect (it clears a
+  corrupt stored key via `removeItem`), so calling it directly in the render
+  body ran it on every render and twice under StrictMode. `const
+  [initialSession] = useState(() => …)` runs the resolution function exactly
+  once, on mount.
+- **Review fix: confirmed the score-entry UI *can* admit a non-finite
+  `delta`, and guarded `GameProvider.addScore` against it, not
+  `addScoreEvent`.** `PlayerEntryRow`'s custom-amount field only checks
+  `/^[+-]?\d+$/` before `Number.parseInt`; a several-hundred-digit string
+  passes that regex but `Number.parseInt` rounds it to `Infinity`. Left
+  unguarded, that `delta` would reach `addScoreEvent`, then
+  `serializeSession`'s bare `JSON.stringify`, which silently turns
+  `Infinity`/`NaN` into `null` — which `deserializeSession` then rejects,
+  deleting the whole persisted game on the next load. The natural fix
+  location is `addScoreEvent` itself (`packages/core/src/session/session.ts`),
+  mirroring the `Number.isFinite` check `parseScoreEvent` already applies —
+  but that file is not in this item's Authorised paths (`## Authorised
+  paths` lists `session/serialize.ts`, `session/errors.ts`,
+  `session/index.ts`, not `session/session.ts`), so it was left unmodified.
+  Instead, `addScore` in `GameProvider.tsx` (which *is* authorised) now
+  checks `Number.isFinite(delta)` before calling `addScoreEvent`, and
+  silently ignores the call otherwise — mirroring the existing "no session
+  in progress" guard immediately above it in the same function, which
+  likewise ignores bad input rather than throwing from an event handler.
+  **Left open:** hardening `addScoreEvent` itself with the same
+  `Number.isFinite` check, so every future caller (not just
+  `GameProvider.addScore`) gets the guarantee for free, needs a path outside
+  this item's Authorised paths and should be picked up by whichever item
+  next touches `session/session.ts`.
+- **Review fix: `GameProvider`'s persist effect no longer clears storage on
+  the very first mount.** The save/clear `useEffect` ran on every render
+  where `state.session` changed, including the initial one; when nothing was
+  restored (`state.session` starts `null`), that first run called
+  `storage.clear()` — a no-op today, but one that fires before `App`'s
+  `useState` hydrate read and this effect are guaranteed to agree on
+  ordering, and needlessly widens the window in which a corrupt-then-cleared
+  key could interact with a subsequent write. A `useRef` flag now skips the
+  `null`-branch clear on the initial mount only (a non-null initial session
+  still saves, as before); a later transition to `null` — `newGame`, the
+  only current source of one — still clears, keeping AC7 intact.

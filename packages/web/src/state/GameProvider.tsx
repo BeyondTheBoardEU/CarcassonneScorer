@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import type { ReactNode } from "react";
 import { addScoreEvent, computeTotals, createSession } from "@carcassonne/core";
 import type { GameSession, Player } from "@carcassonne/core";
@@ -55,8 +55,22 @@ export function GameProvider(props: GameProviderProps): JSX.Element {
   // Persist on change (Item 019): save whenever a session exists, clear
   // when it becomes null (newGame). Runs after every render where
   // `state.session` changed — including the initial render, which is a
-  // harmless no-op re-save when hydrated from storage.load().
+  // harmless no-op re-save when hydrated from storage.load(). The initial
+  // mount is skipped for the `null` branch specifically: `state.session`
+  // starts `null` whenever nothing was restored, and clearing storage then
+  // would be a no-op at best — but it would also needlessly race the
+  // startup hydrate path if a save lands between `storage.load()` (in
+  // `App`) and this effect's first run. `newGame` (a later transition to
+  // `null`) still clears, keeping AC7 intact.
+  const isInitialMount = useRef(true);
   useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (state.session) {
+        storage.save(state.session);
+      }
+      return;
+    }
     if (state.session) {
       storage.save(state.session);
     } else {
@@ -84,6 +98,18 @@ export function GameProvider(props: GameProviderProps): JSX.Element {
       if (!state.session) {
         // No game in progress — nothing to score against. Ignored rather
         // than thrown since this is a programmer error, not a user error.
+        return;
+      }
+      if (!Number.isFinite(delta)) {
+        // A non-finite delta (e.g. from an extreme pasted number the
+        // score-entry field's integer regex still accepts, such as a
+        // 400-digit string that `Number.parseInt` rounds to `Infinity`)
+        // must never reach `addScoreEvent`/storage: `JSON.stringify` would
+        // silently turn `NaN`/`Infinity` into `null`, and
+        // `deserializeSession` would then reject the whole persisted
+        // session on the next load. Ignored rather than thrown, mirroring
+        // the no-session guard above — this is bad input, not a
+        // recoverable game action.
         return;
       }
       const session = addScoreEvent(state.session, {
