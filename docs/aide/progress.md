@@ -93,7 +93,7 @@
 - [x] Set up a 2–6 player game, name players, assign distinct meeple colours.
 - [x] Add/adjust points for any player; totals update immediately. *(Item 016 delivered the "totals update immediately" / always-visible half via the live `Scoreboard`; Item 017 ✅ adds the "add/adjust points for any player" entry controls — quick increments and a custom +/- amount, dispatched via `addScore` for any player in the session.)*
 - [x] Every score change appears in the event log. *(Item 018 ✅: the `EventLog` component renders every entry in `session.events` in sync with count and content, in a documented newest-first deterministic order; verified by the checker against dispatched `addScore` events.)*
-- [ ] Reloading restores the exact in-progress game (players, totals, log).
+- [x] Reloading restores the exact in-progress game (players, totals, log). *(Item 019 AC8 verified 2026-09-30 via aide test (exit 0, 366 tests) incl. packages/web/test/persistence.test.tsx restore-flow: pre-seeded storage restores play view with players/totals, event log entries present, addScore+remount reflects persisted event, newGame+remount returns to setup with storage cleared.)*
 - [x] No scoring arithmetic in the UI — totals come from the core. *(Item 016 established the scoreboard performs no summation; Item 017 ✅ completes the end-to-end proof: entry → core `addScoreEvent` → `computeTotals` → scoreboard, with no `reduce`/sum/tally logic anywhere in `packages/web/src`, confirmed by the checker.)*
 
 **Vision trace:** G1, G3 (first cut), G6; feature 5.1; constraint "accessibility"; architecture §6 (web, persistence).
